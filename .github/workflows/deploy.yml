@@ -1,0 +1,82 @@
+# --- START OF FILE .github/workflows/deploy.yml ---
+name: Deploy Engineering Club to GitHub Pages
+
+# 1. This triggers the action every time you push to the 'main' branch
+on:
+  push:
+    branches: ["main"]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# 2. Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 3. Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # ==========================================
+  # JOB 1: TESTS & INTEGRITY CHECKS
+  # ==========================================
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Verify Critical Architecture Files Exist
+        run: |
+          echo "Running Pre-flight Checks..."
+          # List of files that MUST exist for the site to function
+          files=(
+            "index.html" 
+            "members.html" 
+            "sessions.html" 
+            "session-detail.html" 
+            "data.js" 
+            "engine.js" 
+            "main.js" 
+            "animation.js" 
+            "style.css" 
+            "extend.css" 
+            "spacex_falcon_heavy.glb"
+          )
+          
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ ERROR: Critical file missing: $file"
+              exit 1 # This fails the test and stops deployment!
+            fi
+            echo "✅ FOUND: $file"
+          done
+          echo "All systems nominal. Ready for launch."
+
+  # ==========================================
+  # JOB 2: DEPLOY TO GITHUB PAGES
+  # ==========================================
+  deploy:
+    needs: test # This ensures deployment ONLY happens if tests pass
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload Site Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Uploads your entire root directory
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
