@@ -1,0 +1,120 @@
+<!-- --- START OF FILE index.html --- -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Club | Facility 04</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="extend.css">
+</head>
+<body class="graph-paper scanlines">
+  <canvas id="webgl-canvas"></canvas>
+
+  <div class="cursor"><div class="cursor__ring"></div><div class="cursor__h"></div><div class="cursor__v"></div></div>
+  <div class="caution-tape caution-tape--thick u-full-width" style="position:fixed; top:0; z-index:9999;"></div>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo"><span class="nav__logo-glyph"></span> ENG_CLUB</a>
+      <ul class="nav__links">
+        <li><a href="index.html" class="nav__link is-active">System.Aim</a></li>
+        <li><a href="members.html" class="nav__link">Personnel</a></li>
+        <li><a href="sessions.html" class="nav__link">Mission.Logs</a></li>
+      </ul>
+      <div class="nav__clock nav__clock--active u-ml-auto" id="dseg-clock">00:00:00</div>
+    </div>
+  </nav>
+
+  <header id="aim" class="hero">
+    <div class="hero__content" id="home-hero-inject">
+        <!-- INJECTED BY ENGINE.JS -->
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <main>
+      <div class="caution-tape caution-tape--thick"></div>
+
+      <!-- CONSTRAINTS -->
+      <section id="constraints" class="section container">
+        <div class="section__header">
+          <div class="section__eyebrow"><span class="section__eyebrow-line"></span><span class="section__eyebrow-text">ENV.VARIABLES</span></div>
+          <h2 class="section__title display-md">Think On Their Feet</h2>
+        </div>
+        <div class="grid-3" id="home-constraints-inject">
+          <!-- INJECTED BY ENGINE.JS -->
+        </div>
+      </section>
+
+      <!-- PHILOSOPHY -->
+      <section id="philosophy" class="section container--narrow">
+        <div class="section__header">
+          <div class="section__eyebrow"><span class="section__eyebrow-line"></span><span class="section__eyebrow-text">SYS.PHILOSOPHY</span></div>
+          <h2 class="section__title">Our Core Philosophy</h2>
+        </div>
+        <div class="grid-2" id="home-philosophy-inject">
+           <!-- INJECTED BY ENGINE.JS -->
+        </div>
+      </section>
+
+      <!-- BUDGET & GAINS -->
+      <section id="budget" class="section container">
+        <div class="grid-60-40">
+          <div class="panel inset">
+            <h3 class="display-sm text-orange mb-4">Low Cost, High Impact</h3>
+            <table>
+              <thead>
+                <tr><th>Phase</th><th>Materials</th><th>Est. Cost</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Initial Setup</td><td>A4 paper, cardboard, skewers</td><td>¥3,000 - ¥4,500</td><td><span class="badge badge--data">ONETIME</span></td></tr>
+                <tr class="text-orange"><td class="text-orange">Monthly Base</td><td class="text-orange">Tape, glue, rubber bands</td><td class="text-orange">~¥1,000 / mo</td><td><span class="badge badge--pending">ACTIVE</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="telemetry-log" id="telemetry">
+            <div class="telemetry-log__header">
+              <div class="telemetry-log__status-dot telemetry-log__status-dot--live"></div>
+              <span class="label">Telemetry: What Students Gain</span>
+            </div>
+            <div class="telemetry-log__lines">
+              <div id="home-telemetry-inject">
+                  <!-- INJECTED BY ENGINE.JS -->
+              </div>
+              <div class="telemetry-line mt-2"><span class="typewriter-caret"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/SplitText.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/ScrambleTextPlugin.min.js"></script>
+
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+  </script>
+  <script type="module" src="main.js"></script>
+  <script type="module" src="engine.js"></script>
+  
+  <!-- VERY IMPORTANT: We load animation.js AFTER Engine is done -->
+  <script>
+    const cursor = document.querySelector('.cursor');
+    document.addEventListener('mousemove', e => { cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`; });
+    setInterval(() => { const d = new Date(); document.getElementById('dseg-clock').textContent = d.toLocaleTimeString('en-GB'); }, 1000);
+
+    // Run GSAP only AFTER data is injected into HTML
+    window.addEventListener('EngineDOMReady', () => {
+        const script = document.createElement('script');
+        script.src = 'animation.js';
+        document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>

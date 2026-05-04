@@ -1,0 +1,317 @@
+/* --- START OF FILE extend.css --- */
+
+/* 1. ARCHITECTURAL FIXES */
+.content-wrapper {
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.card, .panel, .inset {
+    background-color: rgba(13, 13, 24, 0.75) !important; 
+    backdrop-filter: blur(16px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+@media (max-width: 768px) {
+    .cursor { display: none !important; }
+    * { cursor: auto !important; }
+    .nav { overflow-x: auto; padding-bottom: 5px; }
+    .nav__links { display: flex; flex-wrap: nowrap; overflow-x: auto; }
+}
+
+/* 2. OPERATOR BADGES (SpaceX ID Card Vibe) */
+.operators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-6);
+}
+
+.operator-card {
+    position: relative;
+    border-top: 3px solid var(--orange);
+    padding: 0 !important; /* Reset padding for strict layout */
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.operator-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px var(--orange-dim);
+    border-top-color: var(--blue);
+}
+
+.operator-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: rgba(0,0,0,0.4);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Brutalist Barcode Generator */
+.operator-barcode {
+    width: 60px;
+    height: 14px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--text-tertiary) 0px,
+        var(--text-tertiary) 2px,
+        transparent 2px,
+        transparent 4px,
+        var(--text-tertiary) 4px,
+        var(--text-tertiary) 5px,
+        transparent 5px,
+        transparent 8px
+    );
+    opacity: 0.5;
+}
+
+.operator-profile {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+}
+
+.operator-avatar {
+    width: 64px;
+    height: 64px;
+    background: var(--bg-void);
+    border: 1px dashed var(--border-mid);
+    border-radius: var(--radius-sm);
+    position: relative;
+}
+
+/* 3. CREW STATUS GRID (Server Dashboard Vibe) */
+.crew-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px; /* Creates the strict border look */
+    background: var(--border-subtle); /* Grid line color */
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.crew-item {
+    background: var(--bg-panel);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    transition: background 0.2s;
+}
+
+.crew-item:hover {
+    background: var(--bg-hover);
+}
+
+.crew-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green-glow);
+}
+
+/* 4. MISSION LOG TIMELINE */
+.timeline-wrapper {
+    position: relative;
+    padding-left: 40px;
+    margin-top: var(--space-6);
+}
+
+.timeline-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 11px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border-mid), transparent);
+}
+
+.mission-log {
+    position: relative;
+    margin-bottom: var(--space-8);
+}
+
+.mission-log__node {
+    position: absolute;
+    left: -40px;
+    top: 24px;
+    width: 24px;
+    height: 24px;
+    background: var(--bg-void);
+    border: 2px solid var(--blue);
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: 0 0 10px var(--blue-dim);
+}
+
+.mission-log:first-child .mission-log__node {
+    border-color: var(--orange);
+    box-shadow: 0 0 15px var(--orange-glow);
+}
+
+.media-placeholder {
+    padding: var(--space-8);
+    border: 1px dashed var(--border-mid);
+    background: rgba(0,0,0,0.3);
+    border-radius: var(--radius-md);
+}
+
+/* --- ADD TO BOTTOM OF extend.css --- */
+
+/* INTERACTIVE MISSION CARDS */
+.mission-card--interactive {
+    cursor: pointer !important;
+    position: relative;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mission-card--interactive:hover {
+    border-color: var(--orange);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 107, 0, 0.05);
+    transform: translateX(10px); /* Slides right on hover, very tactical */
+}
+
+/* Hover brackets effect */
+.mission-card--interactive::before,
+.mission-card--interactive::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s, transform 0.3s;
+}
+
+.mission-card--interactive::before {
+    top: -1px; left: -1px;
+    border-top-color: var(--orange);
+    border-left-color: var(--orange);
+    transform: translate(-5px, -5px);
+    opacity: 0;
+}
+.mission-card--interactive::after {
+    bottom: -1px; right: -1px;
+    border-bottom-color: var(--orange);
+    border-right-color: var(--orange);
+    transform: translate(5px, 5px);
+    opacity: 0;
+}
+
+.mission-card--interactive:hover::before,
+.mission-card--interactive:hover::after {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.card__action {
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+.mission-card--interactive:hover .card__action {
+    opacity: 1;
+}
+
+/* PULSING TIMELINE NODE */
+.mission-log__node--pulse {
+    border-color: var(--green);
+    box-shadow: 0 0 15px var(--green-glow);
+    animation: nodePulse 2s infinite ease-in-out;
+}
+
+@keyframes nodePulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 204, 102, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(0, 204, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 204, 102, 0); }
+}
+
+/* RESPONSIVE GOOGLE SLIDES IFRAME */
+.presentation-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.presentation-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+
+/* TEAM MEDIA GRID */
+.team-log {
+    background: rgba(13, 13, 24, 0.4);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-4);
+}
+
+.media-item {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-void);
+    aspect-ratio: 4/3;
+}
+
+.media-item img, .media-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crops perfectly into the box */
+    filter: grayscale(20%); /* Slight tactical color grade */
+    transition: filter 0.3s, transform 0.5s;
+}
+
+.media-item:hover img, .media-item:hover video {
+    filter: grayscale(0%);
+    transform: scale(1.03);
+}
+
+/* Give videos a play icon overlay indicator */
+.media-item video::before {
+    content: '▶';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2rem;
+    pointer-events: none;
+}
+
+/* --- ADD TO BOTTOM OF extend.css --- */
+
+/* Fix for Google Drive Embedded Videos */
+.gdrive-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* Forces a perfect 16:9 ratio for the video */
+    height: 0;
+    overflow: hidden;
+    background: #000; /* Keeps the background dark while video loads */
+}
+
+.gdrive-wrapper iframe {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    border: none;
+    /* This slight scale fixes the weird black border Google Drive sometimes adds */
+    transform: scale(1.02); 
+}
