@@ -386,107 +386,27 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
   const rimB = new THREE.PointLight(0x4499DD, 1.5, 80); rimB.position.set(20, -6, 10); scene.add(rimB);
   const rimC = new THREE.PointLight(0x00CC66, 1, 60); rimC.position.set(0, -15, -8); scene.add(rimC);
 
-  /* ── Star field — three layers + constellation lines ── */
+  /* ── Star field ── */
   (function buildStars() {
-    // Layer A: dense dim background dust
-    const NA = isMobile ? 1200 : 4000;
-    const posA = new Float32Array(NA * 3);
-    const colA = new Float32Array(NA * 3);
-    for (let i = 0; i < NA; i++) {
-      const r = 200 + Math.random() * 600;
-      const th = Math.random() * Math.PI * 2;
-      const ph = Math.acos(2 * Math.random() - 1);
-      posA[i*3]   = r * Math.sin(ph) * Math.cos(th);
-      posA[i*3+1] = r * Math.cos(ph);
-      posA[i*3+2] = r * Math.sin(ph) * Math.sin(th);
-      const t = Math.random();
-      colA[i*3]   = 0.55 + t * 0.30;
-      colA[i*3+1] = 0.60 + t * 0.05;
-      colA[i*3+2] = 0.85 - t * 0.25;
+    const N = isMobile ? 800 : 3000;
+    const pos = new Float32Array(N * 3);
+    const col = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+      const r = 80 + Math.random() * 140;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+      pos[i*3+1] = r * Math.cos(phi);
+      pos[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+      const warm = Math.random();
+      col[i*3]   = 0.6 + warm * 0.3;
+      col[i*3+1] = 0.6 + warm * 0.1;
+      col[i*3+2] = 0.8 - warm * 0.1;
     }
-    const gA = new THREE.BufferGeometry();
-    gA.setAttribute('position', new THREE.BufferAttribute(posA, 3));
-    gA.setAttribute('color',    new THREE.BufferAttribute(colA, 3));
-    scene.add(new THREE.Points(gA, new THREE.PointsMaterial({
-      size: 0.12, vertexColors: true, transparent: true, opacity: 0.55
-    })));
-
-    // Layer B: mid-size "named" stars — fewer, slightly brighter
-    const NB = isMobile ? 160 : 500;
-    const posB = new Float32Array(NB * 3);
-    const colB = new Float32Array(NB * 3);
-    const starBPositions = [];
-    for (let i = 0; i < NB; i++) {
-      const r = 180 + Math.random() * 400;
-      const th = Math.random() * Math.PI * 2;
-      const ph = Math.acos(2 * Math.random() - 1);
-      const x = r * Math.sin(ph) * Math.cos(th);
-      const y = r * Math.cos(ph);
-      const z = r * Math.sin(ph) * Math.sin(th);
-      posB[i*3] = x; posB[i*3+1] = y; posB[i*3+2] = z;
-      starBPositions.push(new THREE.Vector3(x, y, z));
-      const t = Math.random();
-      colB[i*3]   = 0.70 + t * 0.25;
-      colB[i*3+1] = 0.72 + t * 0.05;
-      colB[i*3+2] = 0.90 - t * 0.40;
-    }
-    const gB = new THREE.BufferGeometry();
-    gB.setAttribute('position', new THREE.BufferAttribute(posB, 3));
-    gB.setAttribute('color',    new THREE.BufferAttribute(colB, 3));
-    const matB = new THREE.PointsMaterial({
-      size: 0.38, vertexColors: true, transparent: true, opacity: 0.80
-    });
-    scene.add(new THREE.Points(gB, matB));
-    scene.userData.starMatB = matB; // picked up in animate for twinkle
-
-    // Layer C: handful of bright accent stars — very sparse
-    const NC = isMobile ? 25 : 60;
-    const posC = new Float32Array(NC * 3);
-    const colC = new Float32Array(NC * 3);
-    for (let i = 0; i < NC; i++) {
-      const r = 160 + Math.random() * 300;
-      const th = Math.random() * Math.PI * 2;
-      const ph = Math.acos(2 * Math.random() - 1);
-      posC[i*3]   = r * Math.sin(ph) * Math.cos(th);
-      posC[i*3+1] = r * Math.cos(ph);
-      posC[i*3+2] = r * Math.sin(ph) * Math.sin(th);
-      const t = Math.random();
-      colC[i*3]   = 0.85 + t * 0.15;
-      colC[i*3+1] = 0.88;
-      colC[i*3+2] = 0.95 - t * 0.30;
-    }
-    const gC = new THREE.BufferGeometry();
-    gC.setAttribute('position', new THREE.BufferAttribute(posC, 3));
-    gC.setAttribute('color',    new THREE.BufferAttribute(colC, 3));
-    const matC = new THREE.PointsMaterial({
-      size: 0.65, vertexColors: true, transparent: true, opacity: 0.90
-    });
-    scene.add(new THREE.Points(gC, matC));
-    scene.userData.starMatC = matC; // second twinkle phase
-
-    // Constellation lines — connect layer-B nearest neighbours
-    if (!isMobile) {
-      const linePts = [];
-      const THRESH = 90;
-      for (let i = 0; i < NB; i++) {
-        let best = -1, bestD = THRESH;
-        for (let j = i + 1; j < NB; j++) {
-          const d = starBPositions[i].distanceTo(starBPositions[j]);
-          if (d < bestD) { bestD = d; best = j; }
-        }
-        if (best >= 0) {
-          linePts.push(
-            starBPositions[i].x,    starBPositions[i].y,    starBPositions[i].z,
-            starBPositions[best].x, starBPositions[best].y, starBPositions[best].z
-          );
-        }
-      }
-      const lgeo = new THREE.BufferGeometry();
-      lgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePts), 3));
-      scene.add(new THREE.LineSegments(lgeo, new THREE.LineBasicMaterial({
-        color: 0x99aadd, transparent: true, opacity: 0.14
-      })));
-    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 0.08, vertexColors: true, transparent: true, opacity: 0.7 })));
   })();
 
   /* ── Central glow (lab nucleus) ── */
@@ -711,9 +631,10 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
 //   })();
 
 /* ═══════════════════════════════════════════════════════════
-     DEEP SPACE SKYBOX — faint stars, nebula wisps, galactic band
+     SOOTHING GALACTIC MANIFOLD (True 3D mapping, no poles)
   ═══════════════════════════════════════════════════════════ */
   (function buildGalaxyManifold() {
+    // Vastly increased sphere radius to encompass the backed-out camera
     const stGeo = new THREE.SphereGeometry(4000, 64, 64);
     const stMat = new THREE.ShaderMaterial({
       uniforms: { time: { value: 0 } },
@@ -731,90 +652,67 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
         varying vec3 vWorldPos;
         uniform float time;
 
-        // 3-D hash — uniform distribution, no pole artefacts
+        // 3D Hash for perfectly distributed stars (no pinching anywhere)
         float hash3(vec3 p) {
-          p = fract(p * vec3(443.897, 441.423, 437.195));
-          p += dot(p, p.yxz + 19.19);
-          return fract(p.x * p.y * p.z);
+            p = fract(p * vec3(443.897, 441.423, 437.195));
+            p += dot(p, p.yxz + 19.19);
+            return fract(p.x * p.y * p.z);
         }
 
+        // True 3D Noise for smooth nebula clouds
         float noise3(vec3 p) {
-          vec3 i = floor(p); vec3 f = fract(p);
-          f = f*f*(3.0-2.0*f);
-          return mix(
-            mix(mix(hash3(i),             hash3(i+vec3(1,0,0)),f.x),
-                mix(hash3(i+vec3(0,1,0)), hash3(i+vec3(1,1,0)),f.x), f.y),
-            mix(mix(hash3(i+vec3(0,0,1)), hash3(i+vec3(1,0,1)),f.x),
-                mix(hash3(i+vec3(0,1,1)), hash3(i+vec3(1,1,1)),f.x), f.y), f.z);
+            vec3 i = floor(p); vec3 f = fract(p);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(
+                mix(mix(hash3(i), hash3(i + vec3(1,0,0)), f.x), mix(hash3(i + vec3(0,1,0)), hash3(i + vec3(1,1,0)), f.x), f.y),
+                mix(mix(hash3(i + vec3(0,0,1)), hash3(i + vec3(1,0,1)), f.x), mix(hash3(i + vec3(0,1,1)), hash3(i + vec3(1,1,1)), f.x), f.y), f.z
+            );
         }
 
-        float fbm(vec3 p) {
-          float v=0.0, a=0.5;
-          for(int i=0;i<5;i++){v+=a*noise3(p);p*=2.01;a*=0.5;}
-          return v;
+        float fbm3(vec3 p) {
+            float v = 0.0; float a = 0.5;
+            for(int i=0; i<4; i++) { v += a * noise3(p); p *= 2.0; a *= 0.5; }
+            return v;
         }
 
         void main() {
-          vec3 rd = normalize(vWorldPos);
+            vec3 rd = normalize(vWorldPos);
+            
+            // Slow majestic rotation of the galaxy
+            float s = sin(time * 0.01), c = cos(time * 0.01);
+            rd.xz = mat2(c, -s, s, c) * rd.xz;
+            
+            // Background Void
+            vec3 col = vec3(0.005, 0.008, 0.012);
 
-          // Very slow majestic sky rotation
-          float s = sin(time * 0.004), c = cos(time * 0.004);
-          rd.xz = mat2(c,-s,s,c) * rd.xz;
+            // Layer 1: Dense faint background stars
+            float h1 = hash3(rd * 400.0);
+            col += vec3(0.6, 0.7, 0.9) * smoothstep(0.99, 1.0, h1) * 0.4;
 
-          // ── Deep void base — slightly lighter so nebula reads ──
-          vec3 col = vec3(0.006, 0.010, 0.018);
+            // Layer 2: Bright twinkling foreground stars
+            float h2 = hash3(rd * 200.0 + 15.0);
+            if(h2 > 0.995) {
+                float twinkle = sin(time * 2.0 + h2 * 100.0) * 0.5 + 0.5;
+                col += vec3(0.8, 0.9, 1.0) * twinkle;
+            }
 
-          // ── Layer 1: micro-star dust ──
-          float h1 = hash3(rd * 500.0);
-          col += vec3(0.60, 0.70, 0.95) * smoothstep(0.988, 1.0, h1) * 0.50;
+            // Layer 3: Nebula Clouds (Mapped directly to 3D space, zero distortion)
+            float n1 = fbm3(rd * 2.5 + vec3(time * 0.02, 0.0, 0.0));
+            float n2 = fbm3(rd * 4.0 - vec3(0.0, time * 0.015, time * 0.01));
+            
+            vec3 nebBlue = vec3(0.02, 0.15, 0.35);
+            vec3 nebPurple = vec3(0.12, 0.03, 0.20);
+            
+            col += nebBlue * smoothstep(0.3, 0.7, n1) * 0.8;
+            col += nebPurple * smoothstep(0.4, 0.8, n2) * 0.6;
 
-          // ── Layer 2: mid stars — gentle twinkle ──
-          float h2 = hash3(rd * 220.0 + 7.3);
-          if (h2 > 0.992) {
-            float twinkle = 0.82 + 0.18 * sin(time * 0.9 + h2 * 80.0);
-            float brightness = smoothstep(0.992, 1.0, h2) * twinkle;
-            float ct = hash3(rd * 220.0 + 13.7);
-            vec3 starCol = mix(vec3(0.75,0.85,1.0), vec3(1.0,0.88,0.70), ct);
-            col += starCol * brightness * 0.65;
-          }
-
-          // ── Layer 3: sparse bright stars ──
-          float h3 = hash3(rd * 90.0 + 41.0);
-          if (h3 > 0.997) {
-            float twinkle2 = 0.80 + 0.20 * sin(time * 0.55 + h3 * 60.0);
-            col += vec3(0.95, 0.97, 1.0) * twinkle2 * 0.90;
-          }
-
-          // ── Galactic band — warm dusty haze ──
-          float band = exp(-pow(rd.y * 2.8, 2.0));
-          float galNoise = fbm(rd * 3.0 + vec3(0.0, 0.0, time * 0.003));
-          col += vec3(0.18, 0.09, 0.04) * band * galNoise * 0.70;
-          // blue arm
-          float arm = exp(-pow((rd.y - 0.18) * 4.5, 2.0));
-          col += vec3(0.02, 0.07, 0.22) * arm * fbm(rd * 5.0) * 0.50;
-
-          // ── Nebula wisps — three distinct clouds, clearly visible ──
-          float n1 = fbm(rd * 2.2 + vec3(time * 0.006, 0.0, 0.0));
-          float n2 = fbm(rd * 3.8 - vec3(0.0, time * 0.005, time * 0.004));
-          float n3 = fbm(rd * 2.8 + vec3(3.7, time * 0.004, 1.2));
-          // blue-violet emission nebula
-          col += vec3(0.03, 0.12, 0.38) * smoothstep(0.45, 0.68, n1) * 0.85;
-          // magenta reflection cloud
-          col += vec3(0.18, 0.03, 0.22) * smoothstep(0.48, 0.72, n2) * 0.65;
-          // teal cloud
-          col += vec3(0.02, 0.16, 0.20) * smoothstep(0.47, 0.70, n3) * 0.50;
-
-          // Clamp to keep it atmospheric, not blown-out
-          col = min(col, vec3(0.55));
-
-          gl_FragColor = vec4(col, 1.0);
+            gl_FragColor = vec4(col, 1.0);
         }
       `
     });
     const stMesh = new THREE.Mesh(stGeo, stMat);
     stMesh.renderOrder = -100;
     scene.add(stMesh);
-    scene.userData.skyMat = stMat; // ticked in animate loop
   })();
 
   /* ── HUD counter ── */
@@ -2376,20 +2274,6 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     rimA.position.set(Math.cos(simTime * 0.3) * 22, 8, Math.sin(simTime * 0.3) * 14);
     rimB.position.set(Math.cos(simTime * 0.22 + 2) * 18, -6, Math.sin(simTime * 0.22 + 2) * 12);
 
-    /* ── Sky shader time ── */
-    if (scene.userData.skyMat) {
-      scene.userData.skyMat.uniforms.time.value = simTime;
-    }
-
-    /* ── Gentle JS-side star twinkle (layer B & C opacity nudge) ──
-       Uses two independent slow sine waves so stars breathe, not flash. */
-    if (scene.userData.starMatB) {
-      scene.userData.starMatB.opacity = 0.68 + 0.12 * Math.sin(simTime * 0.35);
-    }
-    if (scene.userData.starMatC) {
-      scene.userData.starMatC.opacity = 0.78 + 0.12 * Math.sin(simTime * 0.21 + 1.4);
-    }
-
     renderer.render(scene, camera);
   }
 
@@ -2410,58 +2294,60 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
   });
 
   /* ═══════════════════════════════════════════════════════════
-     SIDEBAR ROSTER — desktop sidebar / mobile bottom-sheet
+     SIDEBAR ROSTER (Clickable Navigation List)
   ═══════════════════════════════════════════════════════════ */
   (function buildSidebarRoster() {
-
-    /* ── Shared style tag (scrollbar hide + transitions) ── */
-    const style = document.createElement('style');
-    style.innerHTML = `
-      #roster-sidebar::-webkit-scrollbar { display: none; }
-      #roster-sheet::-webkit-scrollbar   { display: none; }
-      #roster-sheet {
-        scrollbar-width: none;
-        transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
-      }
-      #roster-sheet-toggle {
-        transition: background 0.2s;
-      }
-      #roster-sheet-toggle:active { background: rgba(255,107,0,0.25) !important; }
+    const wrap = document.createElement('div');
+    wrap.id = 'roster-sidebar';
+    wrap.style.cssText = `
+      position: fixed; right: 24px; top: 80px; bottom: 24px; width: 220px;
+      overflow-y: auto; z-index: 150; scrollbar-width: none;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: auto;
     `;
+    
+    // Hide list on strictly vertical mobile screens to prevent crowding
+    if (window.innerWidth < 600) wrap.style.display = 'none';
+
+    // Core Title
+    const titleCore = document.createElement('div');
+    titleCore.style.cssText = 'font-family: var(--font-mono); font-size: 10px; color: #FF6B00; letter-spacing: 2px; margin-bottom: 4px; border-bottom: 1px solid rgba(255,107,0,0.3); padding-bottom: 4px;';
+    titleCore.innerText = 'CORE OPERATORS';
+    wrap.appendChild(titleCore);
+
+    // Core Buttons
+    coreObjects.forEach(obj => {
+      const btn = document.createElement('div');
+      btn.style.cssText = 'font-family: var(--font-mono); font-size: 11px; color: #fff; cursor: pointer; padding: 6px 10px; background: rgba(255,107,0,0.1); border-left: 2px solid #FF6B00; transition: background 0.2s, transform 0.2s;';
+      btn.innerText = obj.member.name;
+      btn.onmouseover = () => { btn.style.background = 'rgba(255,107,0,0.3)'; btn.style.transform = 'translateX(-4px)'; };
+      btn.onmouseout = () => { btn.style.background = 'rgba(255,107,0,0.1)'; btn.style.transform = 'translateX(0)'; };
+      btn.onclick = () => handleNodeClick(obj.mesh);
+      wrap.appendChild(btn);
+    });
+
+    // Orbiting Title
+    const titleSupp = document.createElement('div');
+    titleSupp.style.cssText = 'font-family: var(--font-mono); font-size: 10px; color: #4499DD; letter-spacing: 2px; margin: 12px 0 4px 0; border-bottom: 1px solid rgba(68,153,221,0.3); padding-bottom: 4px;';
+    titleSupp.innerText = 'ORBITING MEMBERS';
+    wrap.appendChild(titleSupp);
+
+    // Orbiting Buttons
+    suppObjects.forEach(obj => {
+      const btn = document.createElement('div');
+      btn.style.cssText = 'font-family: var(--font-mono); font-size: 11px; color: #fff; cursor: pointer; padding: 6px 10px; background: rgba(68,153,221,0.1); border-left: 2px solid #4499DD; transition: background 0.2s, transform 0.2s;';
+      btn.innerText = obj.member.name;
+      btn.onmouseover = () => { btn.style.background = 'rgba(68,153,221,0.3)'; btn.style.transform = 'translateX(-4px)'; };
+      btn.onmouseout = () => { btn.style.background = 'rgba(68,153,221,0.1)'; btn.style.transform = 'translateX(0)'; };
+      btn.onclick = () => handleNodeClick(obj.mesh);
+      wrap.appendChild(btn);
+    });
+
+    // Clean up scrollbar visual via injected CSS
+    const style = document.createElement('style');
+    style.innerHTML = '#roster-sidebar::-webkit-scrollbar { display: none; }';
     document.head.appendChild(style);
 
-    /* ── Helper: build a member button ── */
-    function makeBtn(obj, isCore) {
-      const col    = isCore ? '#FF6B00' : '#4499DD';
-      const colBg  = isCore ? 'rgba(255,107,0,0.1)' : 'rgba(68,153,221,0.1)';
-      const colHov = isCore ? 'rgba(255,107,0,0.3)' : 'rgba(68,153,221,0.3)';
-      const btn = document.createElement('div');
-      btn.style.cssText = `font-family: var(--font-mono); font-size: 11px; color: #fff;
-        cursor: pointer; padding: 6px 10px; background: ${colBg};
-        border-left: 2px solid ${col}; transition: background 0.2s, transform 0.2s;`;
-      btn.innerText = obj.member.name;
-      btn.onmouseover = () => { btn.style.background = colHov; btn.style.transform = 'translateX(-4px)'; };
-      btn.onmouseout  = () => { btn.style.background = colBg;  btn.style.transform = 'translateX(0)'; };
-      btn.onclick = () => {
-        handleNodeClick(obj.mesh);
-        /* Close the sheet on mobile after selecting */
-        const sheet = document.getElementById('roster-sheet');
-        if (sheet && sheet._open) toggleSheet(false);
-      };
-      return btn;
-    }
-
-    /* ── Helper: section title ── */
-    function makeTitle(label, col, extraMargin) {
-      const t = document.createElement('div');
-      t.style.cssText = `font-family: var(--font-mono); font-size: 10px; color: ${col};
-        letter-spacing: 2px; border-bottom: 1px solid ${col}33; padding-bottom: 4px;
-        ${extraMargin ? 'margin: 12px 0 4px 0;' : 'margin-bottom: 4px;'}`;
-      t.innerText = label;
-      return t;
-    }
-
-    /* ── Override legend ── */
+    // Override the HTML bottom-left legend to match the new 2-color constraint
     const legend = document.getElementById('domain-legend');
     if (legend) {
       legend.innerHTML = `
@@ -2470,103 +2356,7 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
       `;
     }
 
-    const isSmall = window.innerWidth < 768;
-
-    /* ════════════════════════════════════════════
-       DESKTOP — fixed right sidebar (unchanged)
-    ════════════════════════════════════════════ */
-    if (!isSmall) {
-      const wrap = document.createElement('div');
-      wrap.id = 'roster-sidebar';
-      wrap.style.cssText = `
-        position: fixed; right: 24px; top: 80px; bottom: 24px; width: 220px;
-        overflow-y: auto; z-index: 150; scrollbar-width: none;
-        display: flex; flex-direction: column; gap: 8px; pointer-events: auto;
-      `;
-      wrap.appendChild(makeTitle('CORE OPERATORS', '#FF6B00', false));
-      coreObjects.forEach(o => wrap.appendChild(makeBtn(o, true)));
-      wrap.appendChild(makeTitle('ORBITING MEMBERS', '#4499DD', true));
-      suppObjects.forEach(o => wrap.appendChild(makeBtn(o, false)));
-      document.body.appendChild(wrap);
-      return; // done for desktop
-    }
-
-    /* ════════════════════════════════════════════
-       MOBILE — bottom sheet (hidden by default)
-    ════════════════════════════════════════════ */
-
-    /* Sheet panel */
-    const sheet = document.createElement('div');
-    sheet.id = 'roster-sheet';
-    sheet._open = false;
-    sheet.style.cssText = `
-      position: fixed; left: 0; right: 0; bottom: 0;
-      height: 55vh;
-      background: rgba(8,8,20,0.97);
-      border-top: 2px solid #FF6B00;
-      border-radius: 16px 16px 0 0;
-      z-index: 300;
-      overflow-y: auto;
-      padding: 12px 16px 32px;
-      display: flex; flex-direction: column; gap: 6px;
-      pointer-events: auto;
-      transform: translateY(100%);
-      box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    `;
-
-    /* Drag handle */
-    const handle = document.createElement('div');
-    handle.style.cssText = `
-      width: 40px; height: 4px; background: rgba(255,107,0,0.5);
-      border-radius: 2px; margin: 0 auto 12px; flex-shrink: 0;
-    `;
-    sheet.appendChild(handle);
-
-    sheet.appendChild(makeTitle('CORE OPERATORS', '#FF6B00', false));
-    coreObjects.forEach(o => sheet.appendChild(makeBtn(o, true)));
-    sheet.appendChild(makeTitle('ORBITING MEMBERS', '#4499DD', true));
-    suppObjects.forEach(o => sheet.appendChild(makeBtn(o, false)));
-
-    document.body.appendChild(sheet);
-
-    /* Toggle button — bottom-center pill */
-    const toggleBtn = document.createElement('button');
-    toggleBtn.id = 'roster-sheet-toggle';
-    toggleBtn.style.cssText = `
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      z-index: 310; pointer-events: auto;
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;
-      color: #FF6B00; text-transform: uppercase;
-      background: rgba(8,8,20,0.9);
-      border: 1px solid rgba(255,107,0,0.5);
-      border-radius: 20px; padding: 7px 20px;
-      cursor: pointer; display: flex; align-items: center; gap: 8px;
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    `;
-    toggleBtn.innerHTML = `<span id="roster-toggle-icon">☰</span> PERSONNEL`;
-    document.body.appendChild(toggleBtn);
-
-    function toggleSheet(forceState) {
-      const open = forceState !== undefined ? forceState : !sheet._open;
-      sheet._open = open;
-      sheet.style.transform = open ? 'translateY(0)' : 'translateY(100%)';
-      toggleBtn.style.bottom = open ? `calc(55vh + 12px)` : '20px';
-      document.getElementById('roster-toggle-icon').textContent = open ? '✕' : '☰';
-    }
-
-    toggleBtn.onclick = () => toggleSheet();
-
-    /* Tap on sheet handle / outside closes it */
-    handle.style.cursor = 'pointer';
-    handle.onclick = () => toggleSheet(false);
-
-    /* Close sheet if user taps the canvas while sheet is open */
-    document.getElementById('scene').addEventListener('touchstart', () => {
-      if (sheet._open) toggleSheet(false);
-    }, { passive: true });
-
+    document.body.appendChild(wrap);
   })();
 
 })();
