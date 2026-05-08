@@ -76,7 +76,8 @@ export const clubData = {
                     assets:[
                         { type: "image", url: "assets/placeholder1.jpg" }, // Add your real image paths here
                         { type: "gdrive-video", url: "https://drive.google.com/file/d/1s-triVlH-90hukmeoRzxOiYIFG1EIjvc/preview" },
-                        { type: "gdrive-video", url: "https://drive.google.com/file/d/1Psg4ECnFS2A94ExjmNTcw3r3zDEGDzg9/preview" }
+                        { type: "gdrive-video", url: "https://drive.google.com/file/d/1Psg4ECnFS2A94ExjmNTcw3r3zDEGDzg9/preview" },
+                        { type: "gdrive-video", url: "https://drive.google.com/file/d/1OlZhiz7lW2elVgTnHBNKD31E8UGQdGv8/preview" }
                         
                     ]
                 },
