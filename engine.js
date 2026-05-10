@@ -13,15 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `).join('');
 
-        homeHero.innerHTML = `
-            <span class="hero__overline">${clubData.home.hero.overline}</span>
-            <h1 class="hero__headline">${clubData.home.hero.headline}</h1>
-            <p class="hero__sub text-lg">${clubData.home.hero.subheadline}</p>
-            <div class="hero__meta">
-                ${statsHtml}
-                <a href="#register" class="btn btn--primary u-ml-auto">Initialize Registration</a>
-            </div>
-        `;
+homeHero.innerHTML = `
+    <span class="hero__overline">${clubData.home.hero.overline}</span>
+    <h1 class="hero__headline">${clubData.home.hero.headline}</h1>
+    <p class="hero__sub text-lg">${clubData.home.hero.subheadline}</p>
+    <div class="hero__meta">
+        ${statsHtml}
+    </div>
+`;
     }
 
     const homeConstraints = document.getElementById('home-constraints-inject');
