@@ -23,27 +23,29 @@
 const CORE_MEMBERS =[
   {
     id: 'c0', name: 'Mohana Rangan Desigan', role: 'Club Operator', domain: 'cfd', initials: 'MRD',
-    research: 'Math Guide & Session Planner',
-    bio: 'Calculates probability, descent formulas, and statistical analysis for engineering post-mortems.',
+    research: 'Math Guide & Session Planner & Website manager',
+    bio: 'Calculates probability, descent formulas, statistical analysis for engineering post-mortems, creates, manages website, and responsible for the simulations',
     publications: 15, h_index: 6, email: 'mohana@enggclub.edu'
   },
   {
-    id: 'c1', name: 'Laeem Khan', role: 'Club Operator', domain: 'ml', initials: 'LK',
-    research: 'Guide & Session Planner',
-    bio: 'Architects the session timelines and ensures mission objectives are met efficiently.',
-    publications: 8, h_index: 3, email: 'laeem@enggclub.edu'
+    id: 'c1', name: 'Vivaan Keluskar', role: 'Club Operator', domain: 'cfd', initials: 'VK',
+    research: 'Physics Guide & Challenge Designer',
+    bio: 'Oversees the physical mechanics of drops and designs high-pressure engineering constraints.',
+    publications: 12, h_index: 4, email: 'vivaan@enggclub.edu'
   },
+
   {
     id: 'c2', name: 'Buvan Senthil Vinayakam', role: 'Club Operator', domain: 'fem', initials: 'BSV',
     research: 'Guide & Challenge Designer',
     bio: 'Develops structural parameters and failure-condition simulations for team challenges.',
     publications: 10, h_index: 5, email: 'buvan@enggclub.edu'
   },
-  {
-    id: 'c3', name: 'Vivaan Keluskar', role: 'Club Operator', domain: 'cfd', initials: 'VK',
-    research: 'Physics Guide & Challenge Designer',
-    bio: 'Oversees the physical mechanics of drops and designs high-pressure engineering constraints.',
-    publications: 12, h_index: 4, email: 'vivaan@enggclub.edu'
+
+    {
+    id: 'c3', name: 'Laeem Khan', role: 'Club Operator', domain: 'ml', initials: 'LK',
+    research: 'Guide & Session Planner',
+    bio: 'Architects the session timelines and ensures mission objectives are met efficiently.',
+    publications: 8, h_index: 3, email: 'laeem@enggclub.edu'
   },
   {
     id: 'c4', name: 'Ziwen An', role: 'Club Operator', domain: 'ml', initials: 'ZA',
