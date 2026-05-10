@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physics Lab | Engineering Club</title>
+  <style>
+    /* ============================================
+       DESIGN TOKENS & RESET
+    ============================================ */
+    :root {
+      --bg-deep:       #03040d;
+      --bg-panel:      rgba(8, 9, 22, 0.85);
+      --bg-card:       rgba(12, 14, 30, 0.9);
+      --border-subtle: rgba(80, 120, 255, 0.12);
+      --border-mid:    rgba(80, 120, 255, 0.25);
+      --border-hot:    rgba(255, 120, 40, 0.4);
+
+      --blue:    #4d9fff;
+      --blue-dim: rgba(77,159,255,0.12);
+      --orange:  #ff7a28;
+      --orange-dim: rgba(255,122,40,0.12);
+      --green:   #39e07a;
+      --green-dim: rgba(57,224,122,0.1);
+      --red:     #ff3b3b;
+      --red-dim: rgba(255,59,59,0.12);
+      --cyan:    #00e5ff;
+      --gold:    #ffd060;
+
+      --text-primary:   #e8eaff;
+      --text-secondary: #8892b0;
+      --text-tertiary:  #4a5270;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-mono: 'Courier New', 'Lucida Console', monospace;
+      --font-display: Georgia, 'Times New Roman', serif;
+
+      /* Complexity mode */
+      --mode-color: var(--blue);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============================================
+       BACKGROUND EFFECTS
+    ============================================ */
+    #sim-webgl-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 30% 20%, #0a0d2e 0%, #03040d 60%);
+    }
+
+    /* Scanlines overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* ============================================
+       CUSTOM CURSOR (desktop only)
+    ============================================ */
+    @media (pointer: fine) {
+      * { cursor: none !important; }
+      .cursor {
+        position: fixed;
+        top: 0; left: 0;
+        pointer-events: none;
+        z-index: 9999;
+        will-change: transform;
+      }
+      .cursor__ring {
+        width: 28px; height: 28px;
+        border: 1.5px solid var(--blue);
+        border-radius: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        transition: border-color 0.2s, transform 0.2s, background 0.2s;
+      }
+      .cursor__dot {
+        width: 4px; height: 4px;
+        background: var(--blue);
+        border-radius: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+      }
+    }
+    @media (pointer: coarse) {
+      .cursor { display: none; }
+    }
+
+    /* ============================================
+       NAV
+    ============================================ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 56px;
+      background: rgba(3, 4, 13, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .nav__logo {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--text-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav__logo-glyph {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--blue);
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.5; transform:scale(0.7); }
+    }
+    .nav__links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav__link {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav__link:hover, .nav__link.is-active { color: var(--text-primary); }
+    .nav__clock {
+      font-size: 11px;
+      color: var(--blue);
+      margin-left: auto;
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 640px) {
+      .sim-dashboard { padding: 14px; gap: 12px; }
+      .readout-cell__value { font-size: 14px; }
+      .sim-module-title { font-size: 16px; }
+      .param-control__name { font-size: 10px; }
+      .graph-label { font-size: 7px; }
+      .nav__links { display: none; }
+    }
+
+    /* ============================================
+       LAYOUT WRAPPER
+    ============================================ */
+    .sim-wrapper {
+      position: relative;
+      z-index: 1;
+      padding-top: 80px;
+      padding-bottom: 80px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    /* ============================================
+       PAGE HEADER
+    ============================================ */
+    .page-header {
+      text-align: center;
+      padding: 48px 0 40px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--blue);
+      margin-bottom: 16px;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--blue);
+      opacity: 0.4;
+    }
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 400;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================
+       MISSION ALERT BANNER (narrative mode)
+    ============================================ */
+    .mission-banner {
+      background: linear-gradient(135deg, rgba(255,122,40,0.1), rgba(255,60,60,0.06));
+      border: 1px solid var(--border-hot);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mission-banner::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--orange);
+    }
+    .mission-banner__icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .mission-banner__title {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--orange);
+      margin-bottom: 4px;
+    }
+    .mission-banner__text {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .mission-banner__text strong { color: var(--text-primary); }
+    /* Hide in engineer mode */
+    body.mode-engineer .mission-banner { display: none; }
+
+    /* ============================================
+       COMPLEXITY TOGGLE
+    ============================================ */
+    .complexity-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .complexity-bar__label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-tertiary);
+      margin-right: 4px;
+    }
+    .complexity-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      padding: 6px 14px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .complexity-btn.active {
+      border-color: var(--blue);
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+    .complexity-btn:hover:not(.active) {
+      border-color: var(--border-mid);
+      color: var(--text-primary);
+    }
+    .mode-tag {
+      margin-left: auto;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      padding: 4px 10px;
+      border-radius: 3px;
+      background: var(--blue-dim);
+      color: var(--blue);
+      border: 1px solid rgba(77,159,255,0.25);
+    }
+
+    /* ============================================
+       SIM CARD (Responsive)
+    ============================================ */
+    .sim-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      margin-bottom: 28px;
+      overflow: hidden;
+      display: grid;
+      position: relative;
+      background: transparent;
+    }
+
+    /* Desktop: side by side */
+    @media (min-width: 1025px) {
+      .sim-card { grid-template-columns: 1fr 360px; min-height: 560px; }
+    }
+
+    /* Tablet */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .sim-card { grid-template-columns: 1fr; grid-template-rows: 380px auto; }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .sim-card { grid-template-columns: 1fr; grid-template-rows: 260px auto; }
+    }
+
+    .sim-viewport {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+    @media (min-width: 1025px) {
+      .sim-viewport { border-right: 1px solid var(--border-subtle); }
+    }
+    @media (max-width: 1024px) {
+      .sim-viewport { border-bottom: 1px solid var(--border-subtle); }
+    }
+
+    /* Viewport overlay labels */
+    .sim-viewport__label {
+      position: absolute;
+      top: 14px; left: 14px;
+      font-size: 8px;
+      letter-spacing: 0.25em;
+      color: var(--text-tertiary);
+      z-index: 5;
+      pointer-events: none;
+    }
+    .sim-viewport__status {
+      position: absolute;
+      top: 14px; right: 14px;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      z-index: 5;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 1.5s infinite;
+    }
+    .status-dot.status-warn { background: var(--orange); }
+    .status-dot.status-crit { background: var(--red); animation: pulse-dot 0.5s infinite; }
+
+    /* ============================================
+       DASHBOARD PANEL
+    ============================================ */
+    .sim-dashboard {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow-y: auto;
+    }
+
+    @media (min-width: 1025px) {
+      .sim-dashboard { max-height: 600px; }
+    }
+
+    .sim-module-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 2px;
+    }
+    .sim-module-formula {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-tertiary);
+    }
+
+    /* ============================================
+       STATUS READOUT (Mission Mode telemetry)
+    ============================================ */
+    .readout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .readout-cell {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+    }
+    .readout-cell__label {
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      color: var(--text-tertiary);
+      margin-bottom: 3px;
+    }
+    .readout-cell__value {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .readout-cell__unit {
+      font-size: 8px;
+      color: var(--text-secondary);
+      margin-left: 3px;
+    }
+    .readout-cell.is-alert .readout-cell__value { color: var(--red); }
+    .readout-cell.is-warn .readout-cell__value { color: var(--orange); }
+    .readout-cell.is-ok .readout-cell__value { color: var(--green); }
+
+    /* ============================================
+       PLAIN LANGUAGE EXPLAINER (Simple mode)
+    ============================================ */
+    .explainer-box {
+      background: rgba(77,159,255,0.05);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--blue);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+    .explainer-box strong { color: var(--text-primary); }
+    /* Hide in engineer mode */
+    body.mode-engineer .explainer-box { display: none; }
+
+    /* ============================================
+       ENGINEER EQUATION PANEL (Engineer mode only)
+    ============================================ */
+    .equation-panel {
+      display: none;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 10px;
+      line-height: 1.8;
+    }
+    body.mode-engineer .equation-panel { display: block; }
+
+    .eq-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .eq-line__formula { color: var(--blue); font-size: 11px; }
+    .eq-line__val { color: var(--gold); font-size: 11px; font-weight: 700; }
+    .eq-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 6px 0;
+    }
+
+    /* ============================================
+       PARAMETER CONTROLS
+    ============================================ */
+    .param-control { display: flex; flex-direction: column; gap: 8px; }
+    .param-control__header { display: flex; justify-content: space-between; align-items: center; }
+    .param-control__name { font-size: 10px; color: var(--text-secondary); letter-spacing: 0.08em; }
+    .param-control__value { font-size: 13px; font-weight: 700; }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--border-mid);
+      outline: none;
+    }
+    input[type="range"].blue-range::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 8px rgba(77,159,255,0.6);
+    }
+    input[type="range"].orange-range::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 8px rgba(255,122,40,0.6);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: none;
+      background: var(--blue);
+    }
+
+    /* ============================================
+       COMPARISON CALLOUT (Narrative mode)
+    ============================================ */
+    .comparison-callout {
+      background: rgba(57,224,122,0.05);
+      border: 1px solid rgba(57,224,122,0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comparison-callout__icon { font-size: 14px; flex-shrink: 0; }
+    .comparison-callout strong { color: var(--green); }
+    body.mode-engineer .comparison-callout { display: none; }
+
+    /* ============================================
+       GRAPH AREA
+    ============================================ */
+    .sim-graph-container {
+      background: linear-gradient(180deg, #020412 0%, #000208 100%);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 1px rgba(80,120,255,0.3);
+    }
+    .sim-graph-container canvas {
+      display: block;
+    }
+    .graph-label {
+      position: absolute;
+      top: 7px; left: 10px;
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+    .graph-label.right {
+      left: auto; right: 10px;
+    }
+
+    /* Graph height */
+    @media (min-width: 1025px) {
+      .sim-graph-container { height: 170px; }
+    }
+    @media (max-width: 1024px) {
+      .sim-graph-container { height: 140px; }
+    }
+    @media (max-width: 640px) {
+      .sim-graph-container { height: 120px; }
+    }
+    /* Canvas fills container via JS pixel assignment */
+    .sim-graph-container canvas {
+      display: block;
+    }
+
+    /* ============================================
+       FAILURE STATE OVERLAY
+    ============================================ */
+    .failure-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,30,30,0.1);
+      backdrop-filter: blur(2px);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .failure-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .failure-overlay__title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      color: var(--red);
+      letter-spacing: 0.05em;
+    }
+    .failure-overlay__text {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 260px;
+      line-height: 1.6;
+    }
+    .failure-overlay__debrief {
+      display: none;
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.7;
+      background: rgba(0,0,0,0.6);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,59,59,0.25);
+    }
+    body.mode-engineer .failure-overlay__debrief { display: block; }
+    .btn-retry {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      padding: 8px 20px;
+      border-radius: 3px;
+      border: 1px solid var(--red);
+      background: rgba(255,59,59,0.1);
+      color: var(--red);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-retry:hover { background: rgba(255,59,59,0.2); }
+
+    /* ============================================
+       SUCCESS STATE
+    ============================================ */
+    .success-flash {
+      position: absolute;
+      inset: 0;
+      background: rgba(57,224,122,0.05);
+      z-index: 9;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .success-flash.visible { opacity: 1; }
+
+    /* ============================================
+       MISSION PHASE TIMELINE (Aero module)
+    ============================================ */
+    .phase-timeline {
+      display: flex;
+      gap: 4px;
+      align-items: stretch;
+    }
+    .phase-step {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-subtle);
+      font-size: 7px;
+      letter-spacing: 0.1em;
+      color: var(--text-tertiary);
+      transition: all 0.3s;
+      line-height: 1.4;
+    }
+    .phase-step.active {
+      border-color: var(--blue);
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+    .phase-step.done {
+      border-color: rgba(57,224,122,0.3);
+      background: var(--green-dim);
+      color: var(--green);
+    }
+    /* Hide full timeline on mobile */
+    @media (max-width: 640px) {
+      .phase-timeline { display: none; }
+    }
+
+    /* ============================================
+       STIFFNESS VISUAL BAR
+    ============================================ */
+    .stiffness-bar {
+      display: flex;
+      gap: 3px;
+      margin-top: 4px;
+    }
+    .stiffness-seg {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border-mid);
+      transition: background 0.2s;
+    }
+    .stiffness-seg.filled { background: var(--orange); }
+
+    /* ============================================
+       MARS COMPARISON TOGGLE (Engineer)
+    ============================================ */
+    .planet-toggle {
+      display: none;
+      gap: 6px;
+    }
+    body.mode-engineer .planet-toggle { display: flex; }
+    .planet-btn {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      padding: 4px 10px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .planet-btn.active {
+      border-color: var(--orange);
+      background: var(--orange-dim);
+      color: var(--orange);
+    }
+
+    /* ============================================
+       EXPORT BUTTON (Engineer mode)
+    ============================================ */
+    .export-btn {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      padding: 6px 14px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    body.mode-engineer .export-btn {
+      display: block;
+    }
+    .export-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-dim);
+    }
+
+    /* ============================================
+       G-FORCE BODY FIGURE (Aero — simple mode)
+    ============================================ */
+    .g-force-figure {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .g-force-label {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--text-tertiary);
+    }
+    .g-body-svg {
+      width: 60px;
+      height: auto;
+    }
+    body.mode-engineer .g-force-figure { display: none; }
+
+    /* ============================================
+       SECTION DIVIDER
+    ============================================ */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+      margin: 4px 0;
+    }
+
+    /* ============================================
+       FOOTER NOTE
+    ============================================ */
+    .lab-footer {
+      text-align: center;
+      padding: 32px 0;
+      font-size: 10px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.1em;
+    }
+
+    /* ============================================
+       UTILITY
+    ============================================ */
+    .text-blue { color: var(--blue); }
+    .text-orange { color: var(--orange); }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    .mt-auto { margin-top: auto; }
+
+    /* Fade in on load */
+    .sim-card {
+      animation: fadeUp 0.6s ease both;
+    }
+    .sim-card:nth-child(2) { animation-delay: 0.15s; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="mode-simple">
+
+  <!-- WebGL background canvas -->
+  <canvas id="sim-webgl-canvas"></canvas>
+
+  <!-- Custom cursor (desktop) -->
+  <div class="cursor"><div class="cursor__ring"></div><div class="cursor__dot"></div></div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo"><span class="nav__logo-glyph"></span>ENG_CLUB</a>
+      <ul class="nav__links">
+        <li><a href="index.html" class="nav__link">System.Aim</a></li>
+        <li><a href="members.html" class="nav__link">Personnel</a></li>
+        <li><a href="sessions.html" class="nav__link">Mission.Logs</a></li>
+        <li><a href="lab.html" class="nav__link is-active">Physics.Lab</a></li>
+      </ul>
+      <div class="nav__clock" id="dseg-clock">00:00:00</div>
+    </div>
+  </nav>
+
+  <!-- MAIN WRAPPER -->
+  <div class="sim-wrapper">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="eyebrow">SIMULATION ENGINE V2.0</div>
+      <h1 class="page-title">Interactive Physics Lab</h1>
+      <p class="page-subtitle">Real-time physics simulation — from mission control to classroom</p>
+    </div>
+
+    <!-- COMPLEXITY TOGGLE BAR -->
+    <div class="complexity-bar">
+      <span class="complexity-bar__label">VIEW MODE //</span>
+      <button class="complexity-btn active" data-mode="simple" onclick="setMode('simple')">SIMPLE</button>
+      <button class="complexity-btn" data-mode="detailed" onclick="setMode('detailed')">DETAILED</button>
+      <button class="complexity-btn" data-mode="engineer" onclick="setMode('engineer')">ENGINEER</button>
+      <span class="mode-tag" id="mode-label">MISSION BRIEFING ACTIVE</span>
+    </div>
+
+    <!-- MISSION ALERT BANNER -->
+    <div class="mission-banner">
+      <div class="mission-banner__icon">🚀</div>
+      <div>
+        <div class="mission-banner__title">// ACTIVE MISSION — DRAGON CRS-31 RETURN</div>
+        <div class="mission-banner__text">
+          <strong>Flight Director Mode.</strong> Dragon capsule is de-orbiting from ISS at 7.8 km/s.
+          Re-entry interface in T-12 minutes. Deploy parachutes at the right moment to ensure crew survival.
+          Adjust parameters using the sliders — watch the physics respond in real time.
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODULE 1: AERODYNAMIC DRAG
+    =========================================== -->
+    <div class="sim-card" id="module-aero">
+      <div class="sim-viewport" id="view-aero">
+        <div class="sim-viewport__label">CAM_01 // RE-ENTRY SEQUENCE</div>
+        <div class="sim-viewport__status">
+          <div class="status-dot" id="aero-status-dot"></div>
+          <span id="aero-status-text" style="font-size:8px;letter-spacing:0.15em;color:var(--text-tertiary)">NOMINAL</span>
+        </div>
+        <!-- Failure overlay -->
+        <div class="failure-overlay" id="aero-failure">
+          <div class="failure-overlay__title">MISSION FAILED</div>
+          <div class="failure-overlay__text">Impact velocity too high.<br>Parachute deployed too late.</div>
+          <div class="failure-overlay__debrief">
+            <strong style="color:var(--red)">Technical Debrief:</strong><br>
+            Terminal velocity exceeded 15 m/s at surface contact.<br>
+            Fnet = Fg − Fd remained positive through descent.<br>
+            Required: Total Area ≥ 95 m² for safe splashdown.
+          </div>
+          <button class="btn-retry" onclick="resetAero()">⟳ RETRY MISSION</button>
+        </div>
+        <!-- Success flash -->
+        <div class="success-flash" id="aero-success"></div>
+      </div>
+
+      <div class="sim-dashboard">
+        <!-- Title -->
+        <div>
+          <h2 class="sim-module-title text-blue">Aerodynamic Drag</h2>
+          <p class="sim-module-formula">Fd = ½ ρv²CdA &nbsp;|&nbsp; Re-entry Dynamics</p>
+        </div>
+
+        <!-- Phase Timeline -->
+        <div class="phase-timeline">
+          <div class="phase-step done" id="phase-reentry">RE-ENTRY</div>
+          <div class="phase-step active" id="phase-drogue">DROGUE</div>
+          <div class="phase-step" id="phase-main">MAIN CHUTES</div>
+          <div class="phase-step" id="phase-splash">SPLASHDOWN</div>
+        </div>
+
+        <!-- Plain-language explainer -->
+        <div class="explainer-box">
+          <strong>What's happening?</strong> As the capsule falls, air pushes back against it — that's <strong>drag</strong>.
+          The bigger the parachute, the more air it catches, and the more it slows down.
+          Your goal: keep the landing speed under <strong>10 m/s</strong> (about the speed of a fast run).
+        </div>
+
+        <!-- Live Telemetry Readout -->
+        <div class="readout-grid">
+          <div class="readout-cell" id="readout-vel">
+            <div class="readout-cell__label">VELOCITY</div>
+            <div class="readout-cell__value text-blue">—<span class="readout-cell__unit">m/s</span></div>
+          </div>
+          <div class="readout-cell" id="readout-accel">
+            <div class="readout-cell__label">ACCELERATION</div>
+            <div class="readout-cell__value text-blue">—<span class="readout-cell__unit">m/s²</span></div>
+          </div>
+          <div class="readout-cell" id="readout-drag">
+            <div class="readout-cell__label">DRAG FORCE</div>
+            <div class="readout-cell__value text-blue">—<span class="readout-cell__unit">kN</span></div>
+          </div>
+          <div class="readout-cell" id="readout-alt">
+            <div class="readout-cell__label">ALTITUDE</div>
+            <div class="readout-cell__value text-blue">—<span class="readout-cell__unit">m</span></div>
+          </div>
+        </div>
+
+        <!-- Planet toggle (engineer) -->
+        <div class="planet-toggle">
+          <span style="font-size:8px;color:var(--text-tertiary);letter-spacing:0.15em;align-self:center">ATMOSPHERE:</span>
+          <button class="planet-btn active" data-planet="earth" onclick="setPlanet('earth')">🌍 EARTH</button>
+          <button class="planet-btn" data-planet="mars" onclick="setPlanet('mars')">🔴 MARS</button>
+        </div>
+
+        <!-- Engineer Equation Panel -->
+        <div class="equation-panel" id="eq-aero">
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Gravity Force (Fg)</span>
+            <span class="eq-line__formula">m × g</span>
+            <span class="eq-line__val" id="eq-fg">—</span>
+          </div>
+          <div class="eq-divider"></div>
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Drag Force (Fd)</span>
+            <span class="eq-line__formula">½ρv²CdA</span>
+            <span class="eq-line__val" id="eq-fd">—</span>
+          </div>
+          <div class="eq-divider"></div>
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Net Force</span>
+            <span class="eq-line__formula">Fg − Fd</span>
+            <span class="eq-line__val" id="eq-fnet">—</span>
+          </div>
+          <div class="eq-divider"></div>
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Acceleration</span>
+            <span class="eq-line__formula">Fnet / m</span>
+            <span class="eq-line__val" id="eq-accel">—</span>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Parachute area slider -->
+        <div class="param-control">
+          <div class="param-control__header">
+            <span class="param-control__name">Parachute Deployment Area</span>
+            <span class="param-control__value text-blue" id="val-aero-area">0.0 m²</span>
+          </div>
+          <input type="range" class="blue-range" id="slider-aero-area" min="0" max="100" value="0">
+        </div>
+
+        <!-- Comparison callout (changes dynamically) -->
+        <div class="comparison-callout" id="aero-callout">
+          <span class="comparison-callout__icon">ℹ️</span>
+          <span id="aero-callout-text">Move the slider to deploy the parachute and see how drag slows the capsule.</span>
+        </div>
+
+        <!-- G-force body figure -->
+        <div class="g-force-figure" id="g-figure">
+          <span class="g-force-label">ASTRONAUT G-LOAD</span>
+          <svg class="g-body-svg" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="12" r="10" stroke="#4d9fff" stroke-width="1.5" id="g-head"/>
+            <line x1="30" y1="22" x2="30" y2="70" stroke="#4d9fff" stroke-width="1.5" id="g-body-line"/>
+            <line x1="30" y1="35" x2="10" y2="55" stroke="#4d9fff" stroke-width="1.5" id="g-arm-l"/>
+            <line x1="30" y1="35" x2="50" y2="55" stroke="#4d9fff" stroke-width="1.5" id="g-arm-r"/>
+            <line x1="30" y1="70" x2="14" y2="100" stroke="#4d9fff" stroke-width="1.5" id="g-leg-l"/>
+            <line x1="30" y1="70" x2="46" y2="100" stroke="#4d9fff" stroke-width="1.5" id="g-leg-r"/>
+          </svg>
+          <span style="font-size:11px;font-weight:700;" id="g-val" class="text-blue">1.0 G</span>
+        </div>
+
+        <!-- Graph -->
+        <div class="sim-graph-container mt-auto">
+          <canvas id="graph-aero"></canvas>
+          <span class="graph-label">VELOCITY (m/s) vs TIME</span>
+          <span class="graph-label right" id="graph-aero-live" style="color:var(--blue)">—</span>
+        </div>
+
+        <!-- Export -->
+        <button class="export-btn" onclick="exportCSV('aero')">⬇ EXPORT TELEMETRY CSV</button>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MODULE 2: IMPACT KINEMATICS
+    =========================================== -->
+    <div class="sim-card" id="module-impact">
+      <div class="sim-viewport" id="view-impact">
+        <div class="sim-viewport__label">CAM_02 // F1 CRASH SIMULATION</div>
+        <div class="sim-viewport__status">
+          <div class="status-dot status-warn" id="impact-status-dot"></div>
+          <span id="impact-status-text" style="font-size:8px;letter-spacing:0.15em;color:var(--text-tertiary)">STANDBY</span>
+        </div>
+        <!-- Failure overlay -->
+        <div class="failure-overlay" id="impact-failure">
+          <div class="failure-overlay__title">DRIVER CRITICAL</div>
+          <div class="failure-overlay__text">Impact forces exceeded FIA survival cell limits.<br>Red flag — circuit medical car deployed.</div>
+          <div class="failure-overlay__debrief">
+            <strong style="color:var(--red)">Technical Debrief:</strong><br>
+            Peak deceleration exceeded 40G — above FIA survival threshold.<br>
+            Nose cone + survival cell energy absorption insufficient.<br>
+            Crumple zone length too short for approach velocity.
+          </div>
+          <button class="btn-retry" onclick="resetImpact()">⟳ RESET TEST</button>
+        </div>
+      </div>
+
+      <div class="sim-dashboard">
+        <div>
+          <h2 class="sim-module-title text-orange">F1 Impact Dynamics</h2>
+          <p class="sim-module-formula">F = k·x (elastic→plastic) &nbsp;|&nbsp; RK4 Crumple Zone Physics</p>
+        </div>
+
+        <!-- Plain-language explainer -->
+        <div class="explainer-box" style="border-left-color: var(--orange); background: rgba(255,122,40,0.04);">
+          <strong>What's happening?</strong> The F1 car strikes a tyre wall. The <strong>nose cone</strong> absorbs the initial energy — a soft crumple zone means a longer stop time, lower G-forces on the driver. A rigid structure causes an instant stop: potentially fatal. Keep peak G below <strong>40G</strong> — the driver survival threshold.
+        </div>
+
+        <!-- Live readouts -->
+        <div class="readout-grid">
+          <div class="readout-cell" id="readout-impact-force">
+            <div class="readout-cell__label">PEAK FORCE</div>
+            <div class="readout-cell__value text-orange">—<span class="readout-cell__unit">kN</span></div>
+          </div>
+          <div class="readout-cell" id="readout-impact-g">
+            <div class="readout-cell__label">PEAK G-FORCE</div>
+            <div class="readout-cell__value text-orange">—<span class="readout-cell__unit">G</span></div>
+          </div>
+          <div class="readout-cell" id="readout-impact-energy">
+            <div class="readout-cell__label">ENERGY ABS.</div>
+            <div class="readout-cell__value text-orange">—<span class="readout-cell__unit">kJ</span></div>
+          </div>
+          <div class="readout-cell" id="readout-impact-stop">
+            <div class="readout-cell__label">STOP DIST.</div>
+            <div class="readout-cell__value text-orange">—<span class="readout-cell__unit">cm</span></div>
+          </div>
+        </div>
+
+        <!-- Engineer equations -->
+        <div class="equation-panel" id="eq-impact">
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Kinetic Energy</span>
+            <span class="eq-line__formula">½mv²</span>
+            <span class="eq-line__val" id="eq-ke">—</span>
+          </div>
+          <div class="eq-divider"></div>
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Work Done</span>
+            <span class="eq-line__formula">F × d</span>
+            <span class="eq-line__val" id="eq-work">—</span>
+          </div>
+          <div class="eq-divider"></div>
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Peak Force</span>
+            <span class="eq-line__formula">k × d_crush</span>
+            <span class="eq-line__val" id="eq-peak-f">—</span>
+          </div>
+          <div class="eq-divider"></div>
+          <div class="eq-line">
+            <span style="color:var(--text-tertiary)">Impulse</span>
+            <span class="eq-line__formula">F × Δt</span>
+            <span class="eq-line__val" id="eq-impulse">—</span>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Sliders -->
+        <div class="param-control">
+          <div class="param-control__header">
+            <span class="param-control__name">Approach Velocity</span>
+            <span class="param-control__value text-orange" id="val-impact-vel">15.0 m/s</span>
+          </div>
+          <input type="range" class="orange-range" id="slider-impact-vel" min="5" max="40" value="15">
+        </div>
+
+        <div class="param-control">
+          <div class="param-control__header">
+            <span class="param-control__name">Nose Cone Stiffness</span>
+            <span class="param-control__value text-orange" id="val-impact-stiff">Soft</span>
+          </div>
+          <input type="range" class="orange-range" id="slider-impact-stiff" min="1" max="10" value="3">
+          <!-- Stiffness visual bar -->
+          <div class="stiffness-bar" id="stiffness-bar">
+            <div class="stiffness-seg" id="seg-1"></div>
+            <div class="stiffness-seg" id="seg-2"></div>
+            <div class="stiffness-seg" id="seg-3"></div>
+            <div class="stiffness-seg" id="seg-4"></div>
+            <div class="stiffness-seg" id="seg-5"></div>
+            <div class="stiffness-seg" id="seg-6"></div>
+            <div class="stiffness-seg" id="seg-7"></div>
+            <div class="stiffness-seg" id="seg-8"></div>
+            <div class="stiffness-seg" id="seg-9"></div>
+            <div class="stiffness-seg" id="seg-10"></div>
+          </div>
+        </div>
+
+        <!-- Comparison callout -->
+        <div class="comparison-callout" id="impact-callout" style="border-color:rgba(255,122,40,0.25);background:rgba(255,122,40,0.05);">
+          <span class="comparison-callout__icon">🏎️</span>
+          <span id="impact-callout-text">F1 nose cones absorb up to 400kJ in the first 900mm of deformation — engineered to break away cleanly and protect the survival cell.</span>
+        </div>
+
+        <!-- Graph -->
+        <div class="sim-graph-container mt-auto">
+          <canvas id="graph-impact"></canvas>
+          <span class="graph-label">FORCE (kN) vs CRUSH DISTANCE (cm)</span>
+          <span class="graph-label right" id="graph-impact-live" style="color:var(--orange)">—</span>
+        </div>
+
+        <!-- Export -->
+        <button class="export-btn" onclick="exportCSV('impact')">⬇ EXPORT TELEMETRY CSV</button>
+      </div>
+    </div>
+
+    <!-- FOOTER NOTE -->
+    <div class="lab-footer">
+      SIMULATION ENGINE V2.0 &nbsp;//&nbsp; PHYSICS MODELS BASED ON REAL SPACEX DRAGON & EURO NCAP DATA
+      <br>Numbers are educational approximations — real systems use FEA/CFD solvers.
+    </div>
+
+  </div><!-- /sim-wrapper -->
+
+  <!-- THREE.js Import Map -->
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+  </script>
+
+  <!-- Load the GL simulation engine -->
+  <script type="module" src="sim-gl.js"></script>
+
+  <script>
+    // ============================================
+    // COMPLEXITY MODE MANAGEMENT
+    // ============================================
+    const modeLabels = {
+      simple:   'MISSION BRIEFING ACTIVE',
+      detailed: 'DETAILED DATA MODE',
+      engineer: 'ENGINEER / PROFESSOR MODE'
+    };
+
+    function setMode(mode) {
+      document.body.className = `mode-${mode}`;
+      document.querySelectorAll('.complexity-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+      document.getElementById('mode-label').textContent = modeLabels[mode];
+    }
+
+    // ============================================
+    // CLOCK
+    // ============================================
+    setInterval(() => {
+      document.getElementById('dseg-clock').textContent =
+        new Date().toLocaleTimeString('en-GB');
+    }, 1000);
+
+    // ============================================
+    // CURSOR (desktop only)
+    // ============================================
+    if (window.matchMedia('(pointer: fine)').matches) {
+      const cursor = document.querySelector('.cursor');
+      document.addEventListener('mousemove', e => {
+        cursor.style.transform = `translate3d(${e.clientX}px,${e.clientY}px,0)`;
+      });
+    }
+
+    // ============================================
+    // PLANET TOGGLE
+    // ============================================
+    window.setPlanet = function(planet) {
+      document.querySelectorAll('.planet-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.planet === planet);
+      });
+      // Dispatch event so sim-gl.js can pick it up
+      document.dispatchEvent(new CustomEvent('planetChange', { detail: { planet } }));
+    };
+
+    // ============================================
+    // RESET FUNCTIONS
+    // ============================================
+    window.resetAero = function() {
+      document.getElementById('aero-failure').classList.remove('visible');
+      document.getElementById('slider-aero-area').value = 0;
+      document.getElementById('slider-aero-area').dispatchEvent(new Event('input'));
+      document.dispatchEvent(new CustomEvent('resetAero'));
+    };
+
+    window.resetImpact = function() {
+      document.getElementById('impact-failure').classList.remove('visible');
+      document.dispatchEvent(new CustomEvent('resetImpact'));
+    };
+
+    // ============================================
+    // STIFFNESS BAR UPDATE
+    // ============================================
+    const sliderStiff = document.getElementById('slider-impact-stiff');
+    const stiffLabels = ['', 'Foam', 'Very Soft', 'Soft', 'Moderate', 'Medium', 'Firm', 'Stiff', 'Very Stiff', 'Rigid', 'Steel'];
+    sliderStiff.addEventListener('input', () => {
+      const v = parseInt(sliderStiff.value);
+      document.getElementById('val-impact-stiff').textContent = stiffLabels[v] || v;
+      for (let i = 1; i <= 10; i++) {
+        const seg = document.getElementById(`seg-${i}`);
+        if (seg) seg.classList.toggle('filled', i <= v);
+      }
+    });
+
+    // Init stiffness bar
+    sliderStiff.dispatchEvent(new Event('input'));
+
+    // ============================================
+    // EXPORT CSV
+    // ============================================
+    window.exportCSV = function(module) {
+      const data = window._telemetryLog?.[module] || [];
+      if (!data.length) { alert('Run the simulation first to generate data.'); return; }
+      const headers = Object.keys(data[0]).join(',');
+      const rows = data.map(r => Object.values(r).join(','));
+      const csv = [headers, ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${module}_telemetry_${Date.now()}.csv`;
+      a.click();
+    };
+
+    // ============================================
+    // COMPARISON CALLOUTS (dynamic, aero)
+    // ============================================
+    const aeroCallouts = [
+      { threshold: 0,  text: 'Move the slider to deploy the parachute and see how drag slows the capsule.' },
+      { threshold: 10, text: '🪂 <strong>Drogue chute deployed.</strong> Small parachute stabilizes the capsule — like Dragon\'s 2 drogue chutes at 18km altitude.' },
+      { threshold: 40, text: '🪂 <strong>Main chutes deploying.</strong> Dragon uses 3 main parachutes covering 116m² total — you\'re in the right range.' },
+      { threshold: 80, text: '✅ <strong>Safe splashdown range.</strong> Real Dragon: 3 main chutes produce ~55kN drag. Terminal velocity ≈ 7–9 m/s at sea level.' },
+      { threshold: 95, text: '⚠️ <strong>Over-deployed.</strong> Structure stress on risers exceeds design limits. Real chutes have maximum deployment speeds.' },
+    ];
+
+    window.updateAeroCallout = function(sliderVal) {
+      let text = aeroCallouts[0].text;
+      for (const c of aeroCallouts) {
+        if (sliderVal >= c.threshold) text = c.text;
+      }
+      document.getElementById('aero-callout-text').innerHTML = text;
+    };
+
+    document.getElementById('slider-aero-area').addEventListener('input', e => {
+      window.updateAeroCallout(parseInt(e.target.value));
+    });
+
+    // Impact callouts
+    const impactCallouts = [
+      { v: 5,  k: 3,  text: '🟢 Low-speed shunt. Nose cone absorbs fully — driver walks away. Similar to a pit lane collision.' },
+      { v: 15, k: 3,  text: '🟡 Racing incident speed. Survival cell intact. Equivalent to a mid-corner tyre barrier hit at ~55 km/h.' },
+      { v: 30, k: 3,  text: '🟠 High-speed impact. Nose cone critical — must absorb >150kJ. FIA homologation test boundary.' },
+      { v: 30, k: 8,  text: '🔴 <strong>Rigid structure danger.</strong> Survival cell taking direct load. G-spike is near-instant — monocoque integrity at risk.' },
+    ];
+    window.updateImpactCallout = function(vel, stiff) {
+      let text = impactCallouts[0].text;
+      if (vel >= 30 && stiff >= 7) text = impactCallouts[3].text;
+      else if (vel >= 30) text = impactCallouts[2].text;
+      else if (vel >= 15) text = impactCallouts[1].text;
+      document.getElementById('impact-callout-text').innerHTML = text;
+    };
+
+    document.getElementById('slider-impact-vel').addEventListener('input', () => {
+      window.updateImpactCallout(
+        parseInt(document.getElementById('slider-impact-vel').value),
+        parseInt(sliderStiff.value)
+      );
+    });
+    sliderStiff.addEventListener('input', () => {
+      window.updateImpactCallout(
+        parseInt(document.getElementById('slider-impact-vel').value),
+        parseInt(sliderStiff.value)
+      );
+    });
+  </script>
+
+</body>
+</html>
