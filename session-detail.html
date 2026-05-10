@@ -11,7 +11,10 @@
 <body class="graph-paper scanlines">
   
   <canvas id="webgl-canvas"></canvas>
-  <div class="cursor"><div class="cursor__ring"></div><div class="cursor__h"></div><div class="cursor__v"></div></div>
+  <div class="cursor" style="pointer-events: none; z-index: 9999; position: fixed; top: 0; left: 0;">
+    <div class="cursor__ring" style="width: 28px; height: 28px; border: 1.5px solid #4d9fff; border-radius: 50%; position: absolute; transform: translate(-50%,-50%); transition: all .2s;"></div>
+    <div class="cursor__dot" style="width: 4px; height: 4px; background: #4d9fff; border-radius: 50%; position: absolute; transform: translate(-50%,-50%);"></div>
+  </div>
 
   <!-- NAVIGATION -->
   <nav class="nav">
@@ -21,6 +24,9 @@
   <li><a href="index.html" class="nav__link">System.Aim</a></li>
   <li><a href="members.html" class="nav__link">Personnel</a></li>
   <li><a href="sessions.html" class="nav__link">Mission.Logs</a></li>
+    <li><a href="lab.html" class="nav__link">
+      Real.World.Applications
+    </a></li>
   
   <!-- NEW UPLINK.SOCIAL DROPDOWN -->
   <li class="nav__dropdown-wrapper">

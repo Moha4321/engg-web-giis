@@ -832,7 +832,7 @@
               Fnet = Fg − Fd remained positive through descent.<br>
               Required: Total Area ≥ 95 m² for safe splashdown.
             </div>
-            <button class="btn-retry" onclick="resetAero()">⟳ RETRY MISSION</button>
+            <button class="btn-retry" onclick="resetAero()" onpointerdown="event.stopPropagation()">⟳ RETRY MISSION</button>
           </div>
           <!-- Success flash -->
           <div class="success-flash" id="aero-success"></div>
@@ -913,7 +913,12 @@
             </div>
           </div>
 
-          <div class="section-divider"></div>
+        <div class="section-divider"></div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="complexity-btn active" onclick="document.dispatchEvent(new CustomEvent('startAero'))" style="flex: 1; border-color: var(--sim-blue); color: var(--sim-blue); font-weight: bold; background: var(--sim-blue-dim);">▶ START DROP</button>
+            <button class="complexity-btn" onclick="resetAero()" style="flex: 1;">⟳ RESET</button>
+          </div>
 
           <!-- Parachute area slider -->
           <div class="param-control">
@@ -980,7 +985,7 @@
               Nose cone + survival cell energy absorption insufficient.<br>
               Crumple zone length too short for approach velocity.
             </div>
-            <button class="btn-retry" onclick="resetImpact()">⟳ RESET TEST</button>
+            <button class="btn-retry" onclick="resetImpact()" onpointerdown="event.stopPropagation()">⟳ RESET TEST</button>
           </div>
         </div>
 
@@ -1043,6 +1048,11 @@
           </div>
 
           <div class="section-divider"></div>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="complexity-btn active" onclick="document.dispatchEvent(new CustomEvent('startImpact'))" style="flex: 1; border-color: var(--sim-orange); color: var(--sim-orange); font-weight: bold; background: var(--sim-orange-dim);">▶ START CRASH</button>
+            <button class="complexity-btn" onclick="resetImpact()" style="flex: 1;">⟳ RESET</button>
+          </div>
 
           <!-- Sliders -->
           <div class="param-control">

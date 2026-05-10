@@ -52,7 +52,7 @@ const simState = {
     altitude:   5000,    // m (sim altitude, counts down)
     gravity:    9.81,    // m/s²
     planet:     'earth',
-    running:    true,
+    running:    false,
     failed:     false,
     succeeded:  false,
     time:       0,       // elapsed seconds
@@ -75,7 +75,7 @@ const simState = {
     
     car_x: 4,            // World position
     isCrashing: false,
-    phase: 'idle'        // idle -> rolling -> crashing -> done
+    phase: 'standby'        // standby -> idle -> rolling -> crashing -> done
   }
 };
 
@@ -821,7 +821,7 @@ const ui = {
 if (ui.sliderArea) {
   ui.sliderArea.addEventListener('input', (e) => {
     const raw    = parseInt(e.target.value);
-    const mapped = (raw / 100) * 400; // 0–120 m²
+    const mapped = (raw / 100) * 600; // 0–600 m²
     simState.aero.area = mapped;
     if (ui.valArea) ui.valArea.textContent = `${mapped.toFixed(1)} m²`;
 
@@ -857,7 +857,7 @@ if (ui.sliderStiff) {
 function resetImpactState() {
   const s = simState.impact;
   s.isCrashing   = false;
-  s.phase        = 'idle';
+  s.phase        = 'standby';
   s.x_crush      = 0;
   s.v            = s.approachVel;
   s.F            = 0;
@@ -894,7 +894,7 @@ document.addEventListener('planetChange', (e) => {
   }
   simState.aero.velocity  = 0;
   simState.aero.altitude  = 5000;
-  simState.aero.running   = true;
+  simState.aero.running   = false;
   simState.aero.failed    = false;
   simState.aero.succeeded = false;
   aeroHistory.length = 0;
@@ -906,7 +906,7 @@ document.addEventListener('planetChange', (e) => {
 document.addEventListener('resetAero', () => {
   simState.aero.velocity  = 0;
   simState.aero.altitude  = 5000;
-  simState.aero.running   = true;
+  simState.aero.running   = false;
   simState.aero.failed    = false;
   simState.aero.succeeded = false;
   simState.aero.time      = 0;
@@ -1611,10 +1611,19 @@ function animate(now) {
 updatePhase('drogue');
 updateImpactReadouts();
 
-// Trigger first crash cycle after a short delay
-setTimeout(() => {
-  simState.impact.phase = 'idle';
-}, 800);
+// Start Simulation Event Listeners
+document.addEventListener('startAero', () => {
+  if (!simState.aero.failed && !simState.aero.succeeded) {
+    simState.aero.running = true;
+  }
+});
+
+document.addEventListener('startImpact', () => {
+  if (simState.impact.phase === 'standby' || simState.impact.phase === 'done') {
+    if (simState.impact.phase === 'done') resetImpactState();
+    simState.impact.phase = 'idle'; // Triggers crash sequence
+  }
+});
 
 requestAnimationFrame((t) => { lastTime = t; animate(t); });
 
