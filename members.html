@@ -35,7 +35,7 @@
       height: 100%;
     }
 
-    /* ── NAV ── */
+    /* ── NAV ──
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -72,7 +72,7 @@
       font-size: .75rem;
       color: var(--text-tertiary);
       letter-spacing: .12em;
-    }
+    } */
 
     /* ── HUD — top-left counter ── */
     #hud-wrap {
@@ -248,19 +248,58 @@
 
 <!-- ── NAVIGATION ── -->
 <nav class="nav">
-  <a href="#" class="nav__logo">
-    <span class="nav__logo-glyph"></span>
-    ENGG LAB
-  </a>
-  <div class="nav__clock" id="navClock">00:00:00</div>
   <div class="nav__inner">
-      <!-- <a href="index.html" class="nav__logo"><span class="nav__logo-glyph"></span> ENG_CLUB</a> -->
-      <ul class="nav__links">
-        <li><a href="index.html" class="nav__link">System.Aim</a></li>
-        <li><a href="members.html" class="nav__link is-active">Personnel</a></li>
-        <li><a href="sessions.html" class="nav__link">Mission.Logs</a></li>
-      </ul>
+    <a href="index.html" class="nav__logo"><span class="nav__logo-glyph"></span> ENG_CLUB</a>
+    
+<ul class="nav__links">
+  <li><a href="index.html" class="nav__link">System.Aim</a></li>
+  <li><a href="members.html" class="nav__link">Personnel</a></li>
+  <li><a href="sessions.html" class="nav__link">Mission.Logs</a></li>
+  
+  <!-- NEW UPLINK.SOCIAL DROPDOWN -->
+  <li class="nav__dropdown-wrapper">
+    <span class="nav__link nav__dropdown-trigger" data-interactive="true">Uplink.Social <span style="font-size:0.6em; margin-left:4px;">▼</span></span>
+    
+    <div class="nav__dropdown">
+      <!-- INSTAGRAM LINK -->
+      <a href="https://www.instagram.com/engineering_clubgiis/" target="_blank" rel="noopener noreferrer" class="nav__dropdown-item">
+        <div class="nav__dropdown-header">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          Instagram
+        </div>
+        <p class="nav__dropdown-text">Follow us on Instagram to see what's happening !!</p>
+      </a>
+
+      <!-- REGISTRATION LINK -->
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSda9_PAFGWwHVwZagQh8mu8cXlQ8NUio7-skva8WK2G-21Htw/viewform" target="_blank" rel="noopener noreferrer" class="nav__dropdown-item nav__dropdown-item--primary">
+        <div class="nav__dropdown-header">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Registration
+        </div>
+        <p class="nav__dropdown-text">Click here to register now !</p>
+      </a>
     </div>
+  </li>
+</ul>
+    
+    <div class="nav__clock nav__clock--active u-ml-auto" id="dseg-clock">00:00:00</div>
+    
+    <!-- NEW TOGGLE BUTTON -->
+    <button class="nav__toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
 </nav>
 
 <!-- ── SCENE CANVAS ── -->
@@ -313,6 +352,25 @@
 
 <!-- ── TEAM.JS ── -->
 <script src="team.js"></script>
+
+<!-- Add this inline script to make the clock and cursor work -->
+<script>
+  const cursor = document.querySelector('.cursor');
+  if(cursor) { document.addEventListener('mousemove', e => { cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`; }); }
+  setInterval(() => { const d = new Date(); const clock = document.getElementById('dseg-clock'); if(clock) clock.textContent = d.toLocaleTimeString('en-GB'); }, 1000);
+  // Mobile menu toggle logic
+  const navToggle = document.querySelector('.nav__toggle');
+  const nav = document.querySelector('.nav');
+
+  if(navToggle) {
+      navToggle.addEventListener('click', () => {
+          nav.classList.toggle('is-open');
+      });
+  }
+</script>
+
+</body>
+</html>
 
 </body>
 </html>

@@ -128,14 +128,66 @@ const exhaust = new THREE.Points(pGeom, pMat);
 scene.add(exhaust);
 
 // --- 6. CINEMATIC GSAP TIMELINE ---
+// function initScrollChoreography() {
+//     gsap.registerPlugin(ScrollTrigger);
+    
+//     const isMobile = window.innerWidth < 768;
+//     const rightOffset = isMobile ? 0 : 3.5; // Keep right on desktop
+
+//     // Set initial X position based on screen size
+//     gsap.set(rocketGroup.position, { x: rightOffset });
+
+//     const tl = gsap.timeline({
+//         scrollTrigger: {
+//             trigger: "body",
+//             start: "top top",
+//             end: "bottom bottom",
+//             scrub: 1.5,
+//         }
+//     });
+
+//     // PHASE 1: ZOOM OUT (Hero -> Core Directives)
+//     // Reveal the whole rocket
+//     tl.to(camState, { z: 22, ease: "power1.inOut" }, 0)
+//       .to(rocketGroup.position, { y: 2, ease: "power1.inOut" }, 0)
+//       .to(state, { throttle: 0.1 }, 0); // Slight engine pre-burn
+
+//     // PHASE 2: PREPARE FOR LAUNCH (Core Directives -> Ops Loop)
+//     tl.to(rocketGroup.position, { x: isMobile ? 0 : 1.5, y: -2 }, 1)
+//       .to(rocketGroup.rotation, { z: -0.1, x: 0.1 }, 1) // Tilt into ascent profile
+//       .to(state, { turbulence: 0.1 }, 1); // Ground rumble
+
+//     // PHASE 3: IGNITION & LIFTOFF (Ops Loop -> Bottom)
+//     tl.to(state, { 
+//         throttle: 1.0,         // MAX POWER
+//         turbulence: 0.5,       // Heavy shake
+//         envSpeed: 3.5,         // Stars streak violently
+//         exhaustSpread: 2.0     // Plume expands in vacuum
+//     }, 2)
+//     .to(rocketGroup.position, { y: 6 }, 2) // Rocket ascends off screen
+//     .to(rocketGroup.rotation, { z: 0.2, y: -0.5 }, 2) // Orbital rotation
+    
+//     // Interpolate flame color to Vacuum Blue (#4499DD)
+//     .to(state.flameColor, {
+//         r: 68/255, 
+//         g: 153/255, 
+//         b: 221/255,
+//         onUpdate: () => {
+//             pMat.color.setRGB(state.flameColor.r, state.flameColor.g, state.flameColor.b);
+//         }
+//     }, 2);
+// }
+
+// --- 6. CINEMATIC GSAP TIMELINE ---
 function initScrollChoreography() {
     gsap.registerPlugin(ScrollTrigger);
     
     const isMobile = window.innerWidth < 768;
-    const rightOffset = isMobile ? 0 : 3.5; // Keep right on desktop
+    // CHANGED: Negative offset moves the rocket to the left side on desktop
+    const leftOffset = isMobile ? 0 : -3; 
 
     // Set initial X position based on screen size
-    gsap.set(rocketGroup.position, { x: rightOffset });
+    gsap.set(rocketGroup.position, { x: leftOffset });
 
     const tl = gsap.timeline({
         scrollTrigger: {
@@ -153,8 +205,9 @@ function initScrollChoreography() {
       .to(state, { throttle: 0.1 }, 0); // Slight engine pre-burn
 
     // PHASE 2: PREPARE FOR LAUNCH (Core Directives -> Ops Loop)
-    tl.to(rocketGroup.position, { x: isMobile ? 0 : 1.5, y: -2 }, 1)
-      .to(rocketGroup.rotation, { z: -0.1, x: 0.1 }, 1) // Tilt into ascent profile
+    // CHANGED: -1.5 keeps it on the left. Rotation flipped to lean inwards.
+    tl.to(rocketGroup.position, { x: isMobile ? 0 : -6.5, y: -2 }, 1)
+      .to(rocketGroup.rotation, { z: -0.1, x: 0.1 }, 1) 
       .to(state, { turbulence: 0.1 }, 1); // Ground rumble
 
     // PHASE 3: IGNITION & LIFTOFF (Ops Loop -> Bottom)
@@ -165,7 +218,8 @@ function initScrollChoreography() {
         exhaustSpread: 2.0     // Plume expands in vacuum
     }, 2)
     .to(rocketGroup.position, { y: 6 }, 2) // Rocket ascends off screen
-    .to(rocketGroup.rotation, { z: 0.2, y: -0.5 }, 2) // Orbital rotation
+    // CHANGED: Flipped rotation (z: -0.2, y: 0.5) to arc beautifully from the left side
+    .to(rocketGroup.rotation, { z: -0.2, y: 0.5 }, 2) 
     
     // Interpolate flame color to Vacuum Blue (#4499DD)
     .to(state.flameColor, {

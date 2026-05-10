@@ -1,10 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════
    ATLAS LAB — team.js
    Pure Three.js formation. Keplerian orbital mechanics.
-   No other sections. No HTML cards except the scene.
 
    ── TO ADD/REMOVE MEMBERS ──────────────────────────────────────
-   Edit CORE_MEMBERS (6–7 objects) or SUPPORTED_MEMBERS (any count).
+   Edit CORE_MEMBERS (Operators) or SUPPORTED_MEMBERS (Members).
    The scene rebuilds automatically. No other code needs touching.
 ═══════════════════════════════════════════════════════════════════ */
 
@@ -18,148 +17,87 @@
    ██████╔╝██║  ██║   ██║   ██║  ██║
    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
 
-   EDIT BELOW — add/remove entries freely
-   domain options: 'cfd' | 'fem' | 'ml'
+   CLUB ROSTER DATA
 ════════════════════════════════════════════════════════════════ */
 
-const CORE_MEMBERS = [
+const CORE_MEMBERS =[
   {
-    id: 'c0',
-    name: 'Mohana Rangan Desigan',
-    role: 'Club Operators',
-    domain: 'Maths',
-    initials: 'MRD',
+    id: 'c0', name: 'Mohana Rangan Desigan', role: 'Club Operator', domain: 'cfd', initials: 'MRD',
     research: 'Math Guide & Session Planner',
-    // bio: 'Lead investigator and lab director. 18 years in high-fidelity turbulence modeling. Former NASA Ames Research Center.',
-    // publications: 42,
-    // h_index: 24,
-    // email: 'e.vasquez@atlaslab.edu',
+    bio: 'Calculates probability, descent formulas, and statistical analysis for engineering post-mortems.',
+    publications: 15, h_index: 6, email: 'mohana@enggclub.edu'
   },
   {
-    id: 'c1',
-    name: 'Vivaan Keluskar',
-    role: 'Club Operators',
-    domain: 'Physics',
-    initials: 'MK',
-    research: 'Physics Guide & Challenge Designer',
-    // bio: 'Bridges ML and classical engineering simulation. PhD MIT, postdoc Caltech. Leads PINN integration.',
-    // publications: 31,
-    // h_index: 18,
-    email: 'm.kim@atlaslab.edu',
-  },
-  {
-    id: 'c2',
-    name: 'Laeem Khan',
-    role: 'Club Operators',
-    // role: 'Guide',
-    domain: 'Guide',
-    initials: 'AN',
+    id: 'c1', name: 'Laeem Khan', role: 'Club Operator', domain: 'ml', initials: 'LK',
     research: 'Guide & Session Planner',
-    // bio: 'Expert in FEM for extreme environments. Leads structural optimization for aerospace applications.',
-    // publications: 28,
-    // h_index: 16,
-    email: 'a.nwosu@atlaslab.edu',
+    bio: 'Architects the session timelines and ensures mission objectives are met efficiently.',
+    publications: 8, h_index: 3, email: 'laeem@enggclub.edu'
   },
   {
-    id: 'c3',
-    name: 'Buvan Senthil Vinayakam',
-    role: 'Club Operators',
-    role: 'Guide',
-    // domain: 'Guide',
-    initials: 'BSV',
+    id: 'c2', name: 'Buvan Senthil Vinayakam', role: 'Club Operator', domain: 'fem', initials: 'BSV',
     research: 'Guide & Challenge Designer',
-    // bio: 'Professor of Mechanical Engineering, 25 years in structural mechanics. Advises CFD–FEM cross-domain projects.',
-    // publications: 87,
-    // h_index: 41,
-    email: 'r.mehta@atlaslab.edu',
-    },
-
-  {
-    id: 'c4',
-    name: 'Shora Uchida',
-    role: 'Guide',
-    // domain: 'ml',
-    initials: 'SU',
-    research: 'Guide & Website Manager',
-    // bio: 'Developing surrogate models for real-time flow prediction. Former Google DeepMind, scientific machine learning.',
-    // publications: 15,
-    // h_index: 9,
-    email: 'l.chen@atlaslab.edu',
+    bio: 'Develops structural parameters and failure-condition simulations for team challenges.',
+    publications: 10, h_index: 5, email: 'buvan@enggclub.edu'
   },
-      {
-    id: 'c5',
-    name: 'Adhvaith Vinod Saravanan',
-    role: 'Club Operators',
-    // role: '',
-    // domain: 'cfd',
-    initials: 'AVS',
+  {
+    id: 'c3', name: 'Vivaan Keluskar', role: 'Club Operator', domain: 'cfd', initials: 'VK',
+    research: 'Physics Guide & Challenge Designer',
+    bio: 'Oversees the physical mechanics of drops and designs high-pressure engineering constraints.',
+    publications: 12, h_index: 4, email: 'vivaan@enggclub.edu'
+  },
+  {
+    id: 'c4', name: 'Ziwen An', role: 'Club Operator', domain: 'ml', initials: 'ZA',
+    research: 'Guide & Analyst',
+    bio: 'Tracks team telemetry, evaluates design trade-offs, and breaks down failure points.',
+    publications: 7, h_index: 2, email: 'ziwen@enggclub.edu'
+  },
+  {
+    id: 'c5', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', domain: 'fem', initials: 'DS',
+    research: 'Guide & Materials, Logistics & Web',
+    bio: 'Manages physical resource constraints, system administration, and club infrastructure.',
+    publications: 9, h_index: 4, email: 'dharanevasan@enggclub.edu'
+  },
+  {
+    id: 'c6', name: 'Adhvaith V. Saravanan', role: 'Club Operator', domain: 'cfd', initials: 'AVS',
     research: 'Guide & Materials and Logistics',
-    // bio: 'Infrastructure lead for HPC workflows. Designed the cluster architecture running lab simulations at 10,000+ core scale.',
-    // publications: 19,
-    // h_index: 12,
-    email: 's.reyes@atlaslab.edu',
+    bio: 'Controls inventory bottlenecks and simulates real-world supply chain pressures for builds.',
+    publications: 6, h_index: 2, email: 'adhvaith@enggclub.edu'
   },
   {
-    id: 'c6',
-    name: 'Dharanevasan Sathishkumar',
-    role: 'Guide',
-    // domain: 'ml',
-    initials: 'DS',
-    research: 'Guide & Materials and Logistics & Website Manager',
-    // bio: 'Developing surrogate models for real-time flow prediction. Former Google DeepMind, scientific machine learning.',
-    // publications: 15,
-    // h_index: 9,
-    email: 'l.chen@atlaslab.edu',
+    id: 'c7', name: 'Shora Uchida', role: 'Club Operator', domain: 'ml', initials: 'SU',
+    research: 'Guide & Website Manager',
+    bio: 'Maintains digital telemetry systems and interactive archives for the club network.',
+    publications: 11, h_index: 5, email: 'shora@enggclub.edu'
   },
-  // /* ── ADD MORE CORE MEMBERS HERE ──────────────────────────
-
   {
-    id: 'c7',
-    name: 'Shaurya Shukla ',
-    role: 'Guide',
-    // domain: 'cfd',   // 'cfd' | 'fem' | 'ml'
-    initials: 'SS',
+    id: 'c8', name: 'Shaurya Shukla', role: 'Club Operator', domain: 'fem', initials: 'SS',
     research: 'Guide & Social Media',
-    // bio: 'Bio text here.',
-    // publications: 10,
-    // h_index: 5,
-    email: 'new@atlaslab.edu',
-  },
-  // ────────────────────────────────────────────────────────── */
+    bio: 'Handles external communications, operational reporting, and visual data archiving.',
+    publications: 5, h_index: 1, email: 'shaurya@enggclub.edu'
+  }
 ];
 
-const SUPPORTED_MEMBERS = [
-  /* anchor: id of the CORE_MEMBERS entry this person orbits
-     semi_a: orbital semi-major axis (2.5 – 5.0 recommended)
-     ecc:    eccentricity (0 = circle, 0.0–0.55 for visible ellipse)
-     incl:   orbital inclination in degrees (0–75)
-     lan:    longitude of ascending node in degrees (0–360)
-     aop:    argument of periapsis in degrees (0–360)
-     period: orbital period multiplier (1.0 = base speed)         */
-  { id:'s0',  name:'Aaradhya Akabari',     initials:'AT', domain:'cfd', role:'PhD Candidate',    anchor:'c0', semi_a:3.2, ecc:0.18, incl:15, lan:  0, aop: 30, period:1.0  },
-  { id:'s1',  name:'Aarsh Jayswal',    initials:'PS', domain:'ml',  role:'PhD Candidate',    anchor:'c1', semi_a:2.8, ecc:0.10, incl:35, lan: 60, aop: 80, period:0.85 },
-  { id:'s2',  name:'Adam Widad',     initials:'OH', domain:'fem', role:'MSc Student',      anchor:'c2', semi_a:3.5, ecc:0.30, incl:50, lan:120, aop:150, period:1.2  },
-  { id:'s3',  name:'Adhyayan Akabari',     initials:'JN', domain:'cfd', role:'PhD Candidate',    anchor:'c0', semi_a:3.0, ecc:0.22, incl:10, lan:180, aop:200, period:0.95 },
-  { id:'s4',  name:'Ahaan Rudra',       initials:'WZ', domain:'ml',  role:'Research Intern',  anchor:'c5', semi_a:2.6, ecc:0.08, incl:65, lan:240, aop:270, period:0.75 },
-  { id:'s5',  name:'Areeba Khan',   initials:'IF', domain:'fem', role:'PhD Candidate',    anchor:'c3', semi_a:3.8, ecc:0.40, incl:25, lan:300, aop:320, period:1.35 },
-  { id:'s6',  name:'Arkin Bhadauria',       initials:'RP', domain:'cfd', role:'MSc Student',      anchor:'c4', semi_a:3.1, ecc:0.15, incl:42, lan: 30, aop: 50, period:1.05 },
-  { id:'s7',  name:'Bhrainaa Pillai',    initials:'AD', domain:'ml',  role:'Research Intern',  anchor:'c1', semi_a:2.9, ecc:0.12, incl:58, lan: 90, aop:100, period:0.9  },
-  { id:'s8',  name:'Chirayu Gupta',      initials:'KM', domain:'fem', role:'PhD Candidate',    anchor:'c2', semi_a:4.0, ecc:0.35, incl:20, lan:150, aop:180, period:1.4  },
-  { id:'s9',  name:'Dahye Choi',   initials:'LB', domain:'cfd', role:'Visiting Scholar', anchor:'c0', semi_a:3.4, ecc:0.20, incl:70, lan:210, aop:230, period:1.15 },
-  { id:'s10', name:'Daichi David Ingram',       initials:'SO', domain:'ml',  role:'PhD Candidate',    anchor:'c5', semi_a:2.7, ecc:0.25, incl:32, lan:270, aop:290, period:0.8  },
-  { id:'s11', name:'Mahir Tazwar',     initials:'HS', domain:'fem', role:'MSc Student',      anchor:'c3', semi_a:3.6, ecc:0.28, incl:48, lan:330, aop:350, period:1.25 },
-  { id:'s12', name:'Pragatheesh Rangan Desigan',   initials:'DM', domain:'cfd', role:'Research Intern',  anchor:'c4', semi_a:2.5, ecc:0.05, incl:22, lan: 45, aop: 60, period:0.7  },
-  { id:'s13', name:'Rayden Dsilva', initials:'FA', domain:'ml',  role:'PhD Candidate',    anchor:'c1', semi_a:3.3, ecc:0.45, incl:55, lan:105, aop:120, period:1.1  },
-  /* ── ADD MORE SUPPORTED MEMBERS HERE ──────────────────────
-  { id:'s14', name:'New Person', initials:'NP', domain:'fem', role:'PhD Candidate',
-    anchor:'c2',  // must match a CORE_MEMBERS id
-    semi_a:3.0,   // semi-major axis
-    ecc:0.20,     // eccentricity 0–0.55
-    incl:30,      // inclination degrees
-    lan:0,        // longitude ascending node degrees
-    aop:90,       // argument of periapsis degrees
-    period:1.0 }, // speed multiplier
-  ────────────────────────────────────────────────────────── */
+const SUPPORTED_MEMBERS =[
+  /* anchor: id of the CORE_MEMBERS entry this person orbits */
+  { id:'s0',  name:'Aaradhya Akabari',   initials:'AA',  domain:'cfd', role:'Club Member', anchor:'c0', semi_a:3.2, ecc:0.18, incl:15, lan:  0, aop: 30, period:1.0  },
+  { id:'s1',  name:'Aarsh Jayswal',      initials:'AJ',  domain:'ml',  role:'Club Member', anchor:'c1', semi_a:2.8, ecc:0.10, incl:35, lan: 60, aop: 80, period:0.85 },
+  { id:'s2',  name:'Adam Widad',         initials:'AW',  domain:'fem', role:'Club Member', anchor:'c2', semi_a:3.5, ecc:0.30, incl:50, lan:120, aop:150, period:1.2  },
+  { id:'s3',  name:'Adhyayan Akabari',   initials:'AA2', domain:'cfd', role:'Club Member', anchor:'c3', semi_a:3.0, ecc:0.22, incl:10, lan:180, aop:200, period:0.95 },
+  { id:'s4',  name:'Ahaan Rudra',        initials:'AR',  domain:'ml',  role:'Club Member', anchor:'c4', semi_a:2.6, ecc:0.08, incl:65, lan:240, aop:270, period:0.75 },
+  { id:'s5',  name:'Areeba Khan',        initials:'AK',  domain:'fem', role:'Club Member', anchor:'c5', semi_a:3.8, ecc:0.40, incl:25, lan:300, aop:320, period:1.35 },
+  { id:'s6',  name:'Arkin Bhadauria',    initials:'AB',  domain:'cfd', role:'Club Member', anchor:'c6', semi_a:3.1, ecc:0.15, incl:42, lan: 30, aop: 50, period:1.05 },
+  { id:'s7',  name:'Bhrainaa Pillai',    initials:'BP',  domain:'ml',  role:'Club Member', anchor:'c7', semi_a:2.9, ecc:0.12, incl:58, lan: 90, aop:100, period:0.9  },
+  { id:'s8',  name:'Chirayu Gupta',      initials:'CG',  domain:'fem', role:'Club Member', anchor:'c8', semi_a:4.0, ecc:0.35, incl:20, lan:150, aop:180, period:1.4  },
+  { id:'s9',  name:'Dahye Choi',         initials:'DC',  domain:'cfd', role:'Club Member', anchor:'c0', semi_a:3.4, ecc:0.20, incl:70, lan:210, aop:230, period:1.15 },
+  { id:'s10', name:'Daichi D. Ingram',   initials:'DDI', domain:'ml',  role:'Club Member', anchor:'c1', semi_a:2.7, ecc:0.25, incl:32, lan:270, aop:290, period:0.8  },
+  { id:'s11', name:'Mahir Tazwar',       initials:'MT',  domain:'fem', role:'Club Member', anchor:'c2', semi_a:3.6, ecc:0.28, incl:48, lan:330, aop:350, period:1.25 },
+  { id:'s12', name:'Pragatheesh R. D.',  initials:'PRD', domain:'cfd', role:'Club Member', anchor:'c3', semi_a:2.5, ecc:0.05, incl:22, lan: 45, aop: 60, period:0.7  },
+  { id:'s13', name:'Rayden Dsilva',      initials:'RD',  domain:'ml',  role:'Club Member', anchor:'c4', semi_a:3.3, ecc:0.45, incl:55, lan:105, aop:120, period:1.1  },
+  { id:'s14', name:'Reva Pushpahas',     initials:'RP',  domain:'fem', role:'Club Member', anchor:'c5', semi_a:3.7, ecc:0.32, incl:15, lan:135, aop:160, period:1.3  },
+  { id:'s15', name:'Rimi Kawamoto',      initials:'RK',  domain:'cfd', role:'Club Member', anchor:'c6', semi_a:2.9, ecc:0.18, incl:60, lan:225, aop:250, period:0.88 },
+  { id:'s16', name:'Samika Karthik',     initials:'SK',  domain:'ml',  role:'Club Member', anchor:'c7', semi_a:3.1, ecc:0.10, incl:40, lan:315, aop:340, period:1.0  },
+  { id:'s17', name:'Sosuke Iyoda',       initials:'SI',  domain:'fem', role:'Club Member', anchor:'c8', semi_a:3.9, ecc:0.28, incl:75, lan: 15, aop: 40, period:1.45 },
+  { id:'s18', name:'Tanisha Velu',       initials:'TV',  domain:'cfd', role:'Club Member', anchor:'c0', semi_a:2.6, ecc:0.08, incl:28, lan:195, aop:210, period:0.82 }
 ];
 
 /* ════════════════════════════════════════════════════════════════
@@ -167,8 +105,11 @@ const SUPPORTED_MEMBERS = [
 ════════════════════════════════════════════════════════════════ */
 
 /* ── DOMAIN COLORS ── */
-const DOMAIN_COLOR = { cfd: 0xFF6B00, ml: 0x4499DD, fem: 0x00CC66 };
-const DOMAIN_HEX   = { cfd: '#FF6B00', ml: '#4499DD', fem: '#00CC66' };
+// const DOMAIN_COLOR = { cfd: 0xFF6B00, ml: 0x4499DD, fem: 0x00CC66 };
+// const DOMAIN_HEX   = { cfd: '#FF6B00', ml: '#4499DD', fem: '#00CC66' };
+// const DOMAIN_LABEL = { cfd: 'Fluid Dynamics', ml: 'ML + Engineering', fem: 'Structural / FEM' };
+const DOMAIN_COLOR = { cfd: 0xFF7A00, ml: 0x00E5FF, fem: 0x00FF66 };
+const DOMAIN_HEX   = { cfd: '#FF7A00', ml: '#00E5FF', fem: '#00FF66' };
 const DOMAIN_LABEL = { cfd: 'Fluid Dynamics', ml: 'ML + Engineering', fem: 'Structural / FEM' };
 
 /* ── KEPLERIAN ORBITAL MECHANICS ───────────────────────────────
@@ -395,13 +336,13 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
   }
 
   /* ── Lights ── */
-  scene.add(new THREE.AmbientLight(0x080818, 3));
-  const sunLight = new THREE.PointLight(0xFFE8CC, 4, 120);
+  scene.add(new THREE.AmbientLight(0x111122, 4)); // Boosted ambient light
+  const sunLight = new THREE.PointLight(0xFFE8CC, 6, 150);
   sunLight.position.set(0, 18, 0);
   scene.add(sunLight);
-  const rimA = new THREE.PointLight(0xFF6B00, 2, 80); rimA.position.set(-20, 8, 12); scene.add(rimA);
-  const rimB = new THREE.PointLight(0x4499DD, 1.5, 80); rimB.position.set(20, -6, 10); scene.add(rimB);
-  const rimC = new THREE.PointLight(0x00CC66, 1, 60); rimC.position.set(0, -15, -8); scene.add(rimC);
+  const rimA = new THREE.PointLight(0xFF7A00, 6, 120); rimA.position.set(-20, 8, 12); scene.add(rimA);
+  const rimB = new THREE.PointLight(0x00E5FF, 5, 120); rimB.position.set(20, -6, 10); scene.add(rimB);
+  const rimC = new THREE.PointLight(0x00FF66, 3, 100); rimC.position.set(0, -15, -8); scene.add(rimC);
 
   /* ── Star field — three layers + constellation lines ── */
   (function buildStars() {
@@ -878,14 +819,14 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     const pos = corePositions[i];
     const col = 0xFF6B00; // Orange strictly for Core Operators
 
-    /* ── Phase 2: Singularity & 4D Tesseract Fold ── */
+/* ── Phase 2: Singularity & 4D Tesseract Fold ── */
     const coreGroup = new THREE.Group();
     coreGroup.position.copy(pos);
     coreGroup.userData = { type: 'core', member: m, idx: i };
     
-    // 1. Event Horizon (Glowing Shell)
+    // 1. Event Horizon (Glowing Shell) - Boosted Opacity
     const shellMat = new THREE.MeshBasicMaterial({ 
-        color: col, transparent: true, opacity: 0.15, 
+        color: col, transparent: true, opacity: 0.35, // Was 0.15
         blending: THREE.AdditiveBlending, depthWrite: false 
     });
     const shell = new THREE.Mesh(new THREE.SphereGeometry(1.05 * SCENE_SCALE, 32, 32), shellMat);
@@ -896,10 +837,10 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     const singularity = new THREE.Mesh(new THREE.SphereGeometry(0.5 * SCENE_SCALE, 32, 32), blackMat);
     coreGroup.add(singularity);
 
-    // 3. The 4D Fold (Intersecting Geometry)
+    // 3. The 4D Fold (Intersecting Geometry) - Boosted Wireframe visibility
     const wireGeo = new THREE.IcosahedronGeometry(0.8 * SCENE_SCALE, 1);
     const wireMat = new THREE.MeshBasicMaterial({ 
-        color: col, wireframe: true, transparent: true, opacity: 0.4, 
+        color: col, wireframe: true, transparent: true, opacity: 0.85, // Was 0.4
         blending: THREE.AdditiveBlending, depthWrite: false 
     });
     const wireMesh = new THREE.Mesh(wireGeo, wireMat);
@@ -907,6 +848,10 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     wireMesh2.scale.set(0.7, 0.7, 0.7);
     coreGroup.add(wireMesh);
     coreGroup.add(wireMesh2);
+
+    // 4. NEW: Add a physical light inside each core to illuminate the background/smoke
+    const coreLight = new THREE.PointLight(col, 2.5, 8 * SCENE_SCALE);
+    coreGroup.add(coreLight);
 
     formationGroup.add(coreGroup);
 
@@ -965,6 +910,7 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     cloudGeo.setAttribute('basePos', new THREE.BufferAttribute(new Float32Array(cPos), 3));
 
     // Custom shader to make them swarm/vibrate on the GPU
+// Custom shader to make them swarm/vibrate on the GPU
     const cloudMat = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
@@ -975,23 +921,22 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
             attribute vec3 basePos;
             void main() {
                 vec3 p = basePos;
-                // Quantum vibration noise
                 p.x += sin(time * 3.0 + basePos.y * 20.0) * 0.04;
                 p.y += cos(time * 4.0 + basePos.z * 20.0) * 0.04;
                 p.z += sin(time * 5.0 + basePos.x * 20.0) * 0.04;
                 
                 vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
                 gl_Position = projectionMatrix * mvPosition;
-                gl_PointSize = (60.0 / -mvPosition.z);
+                gl_PointSize = (100.0 / -mvPosition.z); // Was 60.0 (Bigger particles)
             }
         `,
         fragmentShader: `
             uniform vec3 color;
             void main() {
-                // Soft glowing dot
                 float dist = length(gl_PointCoord - vec2(0.5));
                 if (dist > 0.5) discard;
-                float alpha = smoothstep(0.5, 0.1, dist) * 0.6;
+                // Boosted alpha from 0.6 to 1.5 to force a strong glow
+                float alpha = smoothstep(0.5, 0.05, dist) * 1.5; 
                 gl_FragColor = vec4(color, alpha);
             }
         `,
@@ -1009,7 +954,12 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     const orbitPts = orbitWorldPoints(orb, anchorPos.x, anchorPos.y, anchorPos.z);
     orbitPts.push(orbitPts[0]); // close loop
     const orbitGeom = new THREE.BufferGeometry().setFromPoints(orbitPts);
-    const orbitMat = new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.1 });
+    const orbitMat = new THREE.LineBasicMaterial({ 
+        color: col, 
+        transparent: true, 
+        opacity: 0.35, // Increased from 0.1
+        blending: THREE.AdditiveBlending // Makes the lines glow when they overlap
+    });
     const orbitLine = new THREE.Line(orbitGeom, orbitMat);
     formationGroup.add(orbitLine);
 
@@ -1276,22 +1226,23 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
     document.getElementById('hud-hint').style.opacity = '1';
   };
 
-  /* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
      MEMBER CARD UI
   ═══════════════════════════════════════════════════════════ */
   function showMemberCard(m, type, hex) {
     const isCore = type === 'core';
     const anchor = isCore ? null : CORE_MEMBERS.find(c => c.id === m.anchor);
-    const domLabel = DOMAIN_LABEL[m.domain] || m.domain;
 
+    // 1. Clean Top Header (No more ML/CFD domains)
     let html = `
       <div style="margin-bottom:16px;">
-        <div style="font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:${hex};margin-bottom:4px;">${domLabel} &nbsp;&#183;&nbsp; ${isCore ? 'CORE MEMBER' : m.role}</div>
+        <div style="font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:${hex};margin-bottom:4px;">${isCore ? 'CORE OPERATOR' : 'CLUB MEMBER'}</div>
         <div style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:.04em;text-transform:uppercase;color:var(--text-primary);line-height:1.05;">${m.name}</div>
-        <div style="font-family:var(--font-mono);font-size:.75rem;color:var(--text-secondary);margin-top:2px;">${m.role}</div>
+        <div style="font-family:var(--font-mono);font-size:.75rem;color:var(--text-secondary);margin-top:2px;">${m.research ? m.research : m.role}</div>
       </div>`;
 
     if (isCore) {
+      // 2. Core Operator Card (Removed Pubs & H-Index)
       html += `
       <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);border-radius:4px;padding:12px 14px;margin-bottom:14px;">
         <div style="font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;color:var(--text-tertiary);margin-bottom:6px;">WHAT THEY DO</div>
@@ -1299,33 +1250,19 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
       </div>
       <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.65;margin-bottom:14px;">${m.bio}</div>
       <div style="display:flex;gap:24px;margin-bottom:16px;border-top:1px solid var(--border-subtle);padding-top:12px;">
-        <div>
-          <div style="font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;color:var(--text-tertiary);">PUBLICATIONS</div>
-          <div style="font-family:var(--font-mono);font-size:1.4rem;color:${hex};">${m.publications}</div>
-        </div>
-        <div>
-          <div style="font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;color:var(--text-tertiary);">H-INDEX</div>
-          <div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--text-primary);">${m.h_index}</div>
-        </div>
         <div style="margin-left:auto;display:flex;align-items:flex-end;">
           <a href="mailto:${m.email}" class="btn btn--ghost" style="font-size:.7rem;padding:6px 14px;">&#9993; CONTACT</a>
         </div>
       </div>`;
     } else {
+      // 3. Orbiting Member Card (Removed Semi-Major Axis, ECC, INCL)
       if (anchor) {
         html += `
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 12px;background:rgba(0,0,0,0.3);border-radius:4px;border-left:2px solid ${DOMAIN_HEX[anchor.domain]};">
-          <div style="font-family:var(--font-mono);font-size:.6rem;color:${DOMAIN_HEX[anchor.domain]};letter-spacing:.12em;">ANCHORED TO</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 12px;background:rgba(0,0,0,0.3);border-radius:4px;border-left:2px solid #FF7A00;">
+          <div style="font-family:var(--font-mono);font-size:.6rem;color:#FF7A00;letter-spacing:.12em;">ANCHORED TO</div>
           <div style="font-size:.85rem;font-weight:500;">${anchor.name}</div>
-          <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--text-tertiary);">${anchor.role}</div>
         </div>`;
       }
-      html += `
-      <div style="display:flex;gap:20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-tertiary);margin-bottom:10px;border-top:1px solid var(--border-subtle);padding-top:10px;">
-        <span>SEMI-MAJOR AXIS &nbsp;<span style="color:var(--text-primary);">${m.semi_a.toFixed(1)} AU</span></span>
-        <span>ECC &nbsp;<span style="color:var(--text-primary);">${m.ecc.toFixed(2)}</span></span>
-        <span>INCL &nbsp;<span style="color:var(--text-primary);">${m.incl}&deg;</span></span>
-      </div>`;
     }
 
     document.getElementById('card-content').innerHTML = html;
@@ -1499,7 +1436,7 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
         void main(){
           float fres = pow(1.0 - abs(dot(vNorm, normalize(-vPos))), 3.5);
           float shimmer = 0.5 + 0.5*sin(vPos.x*8.0 + vPos.y*6.0 + time*0.7);
-          gl_FragColor = vec4(color, fres * shimmer * 0.09);
+          gl_FragColor = vec4(color, fres * shimmer * 0.3);
         }`,
       transparent: true,
       depthWrite: false,
@@ -2413,12 +2350,12 @@ function orbitWorldPoints(orb, focusX, focusY, focusZ, nPts = 120) {
   animate();
 
   /* ── Clock ── */
-  const clockEl = document.getElementById('navClock');
-  setInterval(() => {
-    const n = new Date();
-    clockEl.textContent = [n.getHours(), n.getMinutes(), n.getSeconds()]
-      .map(v => String(v).padStart(2, '0')).join(':');
-  }, 1000);
+  // const clockEl = document.getElementById('navClock');
+  // setInterval(() => {
+  //   const n = new Date();
+  //   clockEl.textContent = [n.getHours(), n.getMinutes(), n.getSeconds()]
+  //     .map(v => String(v).padStart(2, '0')).join(':');
+  // }, 1000);
 
 /* ── Cursor ── */
   const cursorEl = document.getElementById('cursor');

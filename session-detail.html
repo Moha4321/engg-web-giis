@@ -17,11 +17,46 @@
   <nav class="nav">
     <div class="nav__inner">
       <a href="index.html" class="nav__logo"><span class="nav__logo-glyph"></span> ENG_CLUB</a>
-      <ul class="nav__links">
-        <li><a href="index.html" class="nav__link">System.Aim</a></li>
-        <li><a href="members.html" class="nav__link">Personnel</a></li>
-        <li><a href="sessions.html" class="nav__link is-active">Mission.Logs</a></li>
-      </ul>
+<ul class="nav__links">
+  <li><a href="index.html" class="nav__link">System.Aim</a></li>
+  <li><a href="members.html" class="nav__link">Personnel</a></li>
+  <li><a href="sessions.html" class="nav__link">Mission.Logs</a></li>
+  
+  <!-- NEW UPLINK.SOCIAL DROPDOWN -->
+  <li class="nav__dropdown-wrapper">
+    <span class="nav__link nav__dropdown-trigger" data-interactive="true">Uplink.Social <span style="font-size:0.6em; margin-left:4px;">▼</span></span>
+    
+    <div class="nav__dropdown">
+      <!-- INSTAGRAM LINK -->
+      <a href="https://www.instagram.com/engineering_clubgiis/" target="_blank" rel="noopener noreferrer" class="nav__dropdown-item">
+        <div class="nav__dropdown-header">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          Instagram
+        </div>
+        <p class="nav__dropdown-text">Follow us on Instagram to see what's happening !!</p>
+      </a>
+
+      <!-- REGISTRATION LINK -->
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSda9_PAFGWwHVwZagQh8mu8cXlQ8NUio7-skva8WK2G-21Htw/viewform" target="_blank" rel="noopener noreferrer" class="nav__dropdown-item nav__dropdown-item--primary">
+        <div class="nav__dropdown-header">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Registration
+        </div>
+        <p class="nav__dropdown-text">Click here to register now !</p>
+      </a>
+    </div>
+  </li>
+</ul>
       <div class="nav__clock nav__clock--active u-ml-auto" id="dseg-clock">00:00:00</div>
     </div>
   </nav>
@@ -51,18 +86,87 @@
     setInterval(() => { const d = new Date(); document.getElementById('dseg-clock').textContent = d.toLocaleTimeString('en-GB'); }, 1000);
 
     // Re-trigger GSAP animations
-    window.addEventListener('EngineDOMReady', () => {
+window.addEventListener('EngineDOMReady', () => {
         const script = document.createElement('script');
         script.src = 'animation.js';
         document.body.appendChild(script);
         
-        // Custom animation just for the detail page
+        // Page load animations
+// Page load animations with safety checks
         setTimeout(() => {
-            gsap.from('.team-log', { opacity: 0, y: 30, stagger: 0.2, duration: 0.8, ease: "power2.out" });
-            gsap.from('.media-item', { opacity: 0, scale: 0.9, stagger: 0.1, duration: 0.5, delay: 0.4 });
-            gsap.from('.presentation-wrapper', { opacity: 0, y: 40, duration: 1, ease: "power3.out" });
+            if (document.querySelector('.team-log')) {
+                gsap.from('.team-log', { opacity: 0, y: 30, stagger: 0.2, duration: 0.8, ease: "power2.out" });
+            }
+            if (document.querySelector('.media-item')) {
+                gsap.from('.media-item', { opacity: 0, scale: 0.9, stagger: 0.1, duration: 0.5, delay: 0.4 });
+            }
+            if (document.querySelector('.presentation-wrapper')) {
+                gsap.from('.presentation-wrapper', { opacity: 0, y: 40, duration: 1, ease: "power3.out" });
+            }
         }, 150);
+
+        // --- CAROUSEL ANIMATION LOGIC ---
+        const slides = gsap.utils.toArray('.sci-carousel__slide');
+        if(slides.length > 0) {
+            let currentIndex = 0;
+            let isAnimating = false;
+            const total = slides.length;
+            const currentUI = document.getElementById('sci-current');
+            const progressBar = document.querySelector('.sci-carousel__progress-bar');
+
+            // Setup starting frame
+            gsap.set(slides, { autoAlpha: 0, scale: 1.1 });
+            gsap.set(slides[0], { autoAlpha: 1, scale: 1 });
+            updateUI(0);
+
+            function updateUI(index) {
+                if(currentUI) currentUI.innerText = String(index + 1).padStart(2, '0');
+                if(progressBar) progressBar.style.width = `${((index + 1) / total) * 100}%`;
+            }
+
+            function goToSlide(nextIndex, direction) {
+                if (isAnimating || nextIndex === currentIndex) return;
+                isAnimating = true;
+
+                const currentSlide = slides[currentIndex];
+                const nextSlide = slides[nextIndex];
+
+                // Data-wipe clip path logic
+                const clipStart = direction === 1 ? 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)' : 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)';
+                const clipEnd = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+                const clipExit = direction === 1 ? 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)' : 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)';
+
+                // Prep next slide
+                gsap.set(nextSlide, { autoAlpha: 1, scale: 1.1, clipPath: clipStart, zIndex: 2 });
+                gsap.set(currentSlide, { zIndex: 1 });
+
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        gsap.set(currentSlide, { autoAlpha: 0, clearProps: "clipPath" });
+                        currentIndex = nextIndex;
+                        isAnimating = false;
+                    }
+                });
+
+                // Smooth wipe out + shrink
+                tl.to(currentSlide, { scale: 0.9, clipPath: clipExit, duration: 0.8, ease: "power3.inOut" }, 0);
+                // Smooth wipe in + lock scale
+                tl.to(nextSlide, { scale: 1, clipPath: clipEnd, duration: 0.8, ease: "power3.inOut" }, 0);
+
+                updateUI(nextIndex);
+            }
+
+            document.querySelector('.sci-btn--next').addEventListener('click', () => {
+                goToSlide((currentIndex + 1) % total, 1);
+            });
+
+            document.querySelector('.sci-btn--prev').addEventListener('click', () => {
+                goToSlide((currentIndex - 1 + total) % total, -1);
+            });
+        }
     });
+    
+  
   </script>
 </body>
 </html>

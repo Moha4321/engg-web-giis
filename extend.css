@@ -14,11 +14,93 @@
     border: 1px solid rgba(255,255,255,0.08);
 }
 
+/* ADD THIS INSTEAD */
 @media (max-width: 768px) {
     .cursor { display: none !important; }
     * { cursor: auto !important; }
-    .nav { overflow-x: auto; padding-bottom: 5px; }
-    .nav__links { display: flex; flex-wrap: nowrap; overflow-x: auto; }
+
+    /* Shrink the clock slightly to fit alongside the menu button */
+    .nav__clock {
+        font-size: 0.75rem;
+        padding: var(--space-1) var(--space-2);
+        margin-left: auto;
+        margin-right: var(--space-3);
+    }
+
+    /* Hamburger Toggle Button */
+    .nav__toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        width: 32px;
+        height: 32px;
+        position: relative;
+        z-index: 101;
+        cursor: pointer !important;
+    }
+    
+    .nav__toggle span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: var(--orange);
+        margin: 5px auto;
+        transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s;
+    }
+
+    /* Dropdown Menu Overlay */
+    .nav__links {
+        display: flex !important; /* Overrides style.css */
+        flex-direction: column;
+        position: absolute;
+        top: 56px; /* Exactly below nav bar */
+        left: 0;
+        width: 100%;
+        background: rgba(8, 8, 16, 0.95);
+        backdrop-filter: blur(16px) saturate(120%);
+        -webkit-backdrop-filter: blur(16px) saturate(120%);
+        border-bottom: 2px solid var(--orange);
+        padding: 0;
+        gap: 0;
+        
+        /* High-tech clip-path animation for slide-down */
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+        transition: clip-path 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* Open State */
+    .nav.is-open .nav__links {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    /* Mobile Links Styling */
+    .nav__link {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: var(--space-4);
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.9rem;
+    }
+    
+    .nav__link::after { display: none; } /* Hide the underline effect on mobile */
+    .nav__link:last-child { border-bottom: none; }
+
+    /* Hamburger to 'X' Animation */
+    .nav.is-open .nav__toggle span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+    .nav.is-open .nav__toggle span:nth-child(2) {
+        opacity: 0;
+    }
+    .nav.is-open .nav__toggle span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+}
+
+/* Hide toggle on desktop */
+.nav__toggle {
+    display: none;
 }
 
 /* 2. OPERATOR BADGES (SpaceX ID Card Vibe) */
@@ -499,4 +581,720 @@
         background: radial-gradient(ellipse at 30% 50%, rgba(255,107,0,0.05), transparent 70%),
                     radial-gradient(ellipse at 70% 50%, rgba(68,153,221,0.05), transparent 70%);
     }
+}
+
+/* ── SCI-FI CAROUSEL ── */
+.sci-carousel {
+    position: relative;
+    width: 100%;
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-lg);
+    background: rgba(8, 8, 16, 0.4);
+    padding: var(--space-2);
+    margin-bottom: var(--space-8);
+}
+
+.sci-carousel__viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: #000;
+}
+
+.sci-carousel__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    will-change: transform, clip-path;
+}
+
+.sci-carousel__image-wrap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.sci-carousel__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(15%) contrast(1.1);
+}
+
+.sci-carousel__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(255, 107, 0, 0.15) 0%, transparent 50%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.sci-carousel__ui {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-2) var(--space-2);
+}
+
+.sci-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sci-btn span {
+    color: var(--orange);
+    font-size: 1.2rem;
+}
+
+.sci-btn:hover {
+    color: var(--text-primary);
+    transform: scale(1.05);
+}
+
+.sci-carousel__readout {
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+}
+
+.sci-carousel__progress {
+    width: 100%;
+    height: 2px;
+    background: var(--border-subtle);
+    margin-top: var(--space-2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.sci-carousel__progress-bar {
+    height: 100%;
+    background: var(--orange);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 0 10px var(--orange);
+}
+
+/* -- MEDIA ITEM: Video Link Variant -- */
+.media-item--video-link {
+    display: block;
+    position: relative;
+    cursor: pointer;
+}
+
+.media-item__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 16, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.media-item--video-link:hover .media-item__overlay {
+    opacity: 1;
+}
+
+.media-item__play-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--orange);
+    filter: drop-shadow(0 0 10px var(--orange-glow));
+    transition: transform 0.3s;
+}
+.media-item--video-link:hover .media-item__play-icon {
+    transform: scale(1.1);
+}
+
+/* -- UPGRADED MEDIA PLAYER CARD -- */
+.media-item--video {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.media-item--video .launch-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    background: radial-gradient(circle, rgba(8, 8, 16, 0.6) 0%, rgba(8, 8, 16, 0.9) 100%);
+    opacity: 0;
+    transition: opacity 0.3s var(--ease-snappy);
+}
+
+.media-item--video:hover .launch-overlay {
+    opacity: 1;
+}
+
+.media-item--video .launch-play-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--orange);
+    filter: drop-shadow(0 0 8px var(--orange-glow));
+    transition: transform 0.3s var(--ease-spring);
+}
+.media-item--video:hover .launch-play-icon {
+    transform: scale(1.15);
+}
+
+.media-item--video .launch-text {
+    text-align: center;
+    line-height: 1.4;
+    transform: translateY(10px);
+    transition: transform 0.3s;
+}
+.media-item--video:hover .launch-text {
+    transform: translateY(0);
+}
+
+/* Animated Corner Brackets */
+.media-item--video .launch-corners::before,
+.media-item--video .launch-corners::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--orange);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+}
+.media-item--video .launch-corners::before {
+    top: 10px; left: 10px;
+    border-right: none; border-bottom: none;
+    transform: translate(-10px, -10px);
+}
+.media-item--video .launch-corners::after {
+    bottom: 10px; right: 10px;
+    border-left: none; border-top: none;
+    transform: translate(10px, 10px);
+}
+.media-item--video:hover .launch-corners::before,
+.media-item--video:hover .launch-corners::after {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+/* -- INLINE VIDEO PLAYER UPGRADES -- */
+.media-item--video .stream-container {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none; /* Ignore clicks until activated */
+    background: transparent;
+    transition: background 0.5s;
+}
+
+/* State: When video is booting/playing */
+.media-item--video.is-playing .stream-container {
+    pointer-events: auto;
+    background: #000;
+}
+
+.media-item--video.is-playing .stream-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: relative;
+    z-index: 10;
+}
+
+/* Darken and blur the background image when active */
+.media-item--video.is-playing img {
+    opacity: 0.1;
+    filter: grayscale(100%) blur(8px);
+}
+
+/* Lock the card in place so it doesn't wobble while watching the video */
+.media-item--video.is-playing:hover {
+    transform: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 20px var(--orange-glow);
+}
+
+/* --- UPGRADE: INLINE VIDEO PLAYER & CUSTOM CONTROLS --- */
+
+/* 1. Main container setup */
+.media-item--video {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    background: #000;
+    /* Forces a clean 16:9 aspect ratio */
+    aspect-ratio: 16 / 9;
+}
+
+/* 2. Layers inside the container */
+.media-item__thumbnail,
+.custom-play-overlay,
+.stream-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* 3. Thumbnail (bottom layer) */
+.media-item__thumbnail {
+    object-fit: cover;
+    z-index: 1;
+    transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 4. Custom Play Button Overlay (middle layer) */
+.custom-play-overlay {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    background: rgba(8, 8, 16, 0.7);
+    backdrop-filter: blur(2px);
+    opacity: 1;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.custom-play-icon {
+    width: 52px;
+    height: 52px;
+    color: var(--orange);
+    filter: drop-shadow(0 0 10px var(--orange-glow));
+    transform: scale(1);
+    transition: transform 0.3s var(--ease-spring);
+}
+
+.custom-play-text {
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    transition: opacity 0.3s, color 0.3s;
+}
+
+.media-item--video:hover .custom-play-icon {
+    transform: scale(1.1);
+}
+
+.media-item--video:hover .custom-play-text {
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+/* 5. Iframe Container (top layer, hidden by default) */
+.stream-container {
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none; /* Prevents interaction when hidden */
+    transition: opacity 0.5s 0.2s; /* Fade in with a slight delay */
+}
+
+.stream-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* --- PLAYING STATE (triggered by JS) --- */
+
+/* When .is-playing is added, hide thumbnail and overlay */
+.media-item--video.is-playing .media-item__thumbnail,
+.media-item--video.is-playing .custom-play-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Reveal the iframe and make it interactive */
+.media-item--video.is-playing .stream-container {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Lock the card from animating on hover while playing */
+.media-item--video.is-playing:hover {
+    transform: none !important;
+}
+
+/* Ensure the container is strictly 16:9 */
+.media-item--video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 16; /* This kills the black bars */
+    background: #000;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* Force the iframe to fill the container perfectly */
+.stream-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+/* When the user clicks play */
+.media-item--video.is-playing .stream-container {
+    opacity: 1;
+    z-index: 10;
+}
+
+/* Thumbnail fitting */
+.media-item__thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This makes the image fill the box without empty space */
+}
+
+/* Ensure the iframe itself doesn't cause overflow issues */
+.stream-container iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+
+/* --- DYNAMIC VIDEO PLAYER --- */
+.media-item--video {
+    position: relative;
+    width: 100%;
+    /* Remove aspect-ratio: 16/9; */
+    min-height: 250px; /* Ensures it has presence before loading */
+    background: #000;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The Iframe now holds the aspect ratio */
+.stream-container {
+    width: 100%;
+    /* We use 56.25% (16:9) as a default, but we can override it */
+    aspect-ratio: 16 / 9; 
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.media-item--video.is-playing .stream-container {
+    opacity: 1;
+}
+
+/* Custom Play Overlay */
+.custom-play-overlay {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 8, 16, 0.85);
+    inset: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CURSOR VISIBILITY UPGRADE
+═══════════════════════════════════════════════════════════ */
+
+/* Boost base opacity and add a dark shadow for contrast on bright backgrounds */
+.cursor__ring, 
+.cursor__h, 
+.cursor__v {
+    opacity: 0.9 !important; 
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Make the center ring a bit thicker and add a slight tint inside */
+.cursor__ring {
+    border-width: 1.5px !important; 
+    background: rgba(255, 107, 0, 0.15); 
+    backdrop-filter: invert(15%); /* Adds a cool sci-fi distortion effect behind the crosshair */
+}
+
+/* Supercharge the glow when hovering over a clickable item */
+body:has(a:hover) .cursor__ring,
+body:has(button:hover) .cursor__ring,
+body:has([data-interactive]:hover) .cursor__ring,
+body:has(.nav__toggle:hover) .cursor__ring {
+    opacity: 1 !important;
+    background: rgba(255, 107, 0, 0.3);
+    box-shadow: 0 0 10px var(--orange-glow), 0 0 4px rgba(0, 0, 0, 0.8);
+    border-width: 2px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL COMMS WIDGET (IG & Registration)
+═══════════════════════════════════════════════════════════ */
+
+@keyframes boot-up-comms {
+    0% { opacity: 0; transform: translateY(40px) scale(0.9); clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); }
+    100% { opacity: 1; transform: translateY(0) scale(1); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+.global-comms {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9900; /* Below the cursor, above the scene */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none; /* Let clicks pass through empty space */
+    animation: boot-up-comms 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s both; /* 1s delay to let main scene load */
+}
+
+.comms-btn {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    cursor: none; /* Force custom cursor */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    border: 1px solid transparent;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+.comms-btn__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Sci-fi Corner Bracket Animations */
+.comms-btn::before, .comms-btn::after {
+    content: '';
+    position: absolute;
+    width: 8px; height: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s var(--ease-spring);
+    opacity: 0;
+}
+.comms-btn::before { top: -1px; left: -1px; border-right: none; border-bottom: none; transform: translate(-4px, -4px); }
+.comms-btn::after { bottom: -1px; right: -1px; border-left: none; border-top: none; transform: translate(4px, 4px); }
+
+.comms-btn:hover::before, .comms-btn:hover::after {
+    transform: translate(0, 0);
+    opacity: 1;
+}
+
+/* ── Ghost Style (Instagram) ── */
+.comms-btn--ghost {
+    background: rgba(13, 13, 24, 0.7);
+    color: var(--text-secondary);
+    border-color: var(--border-mid);
+}
+.comms-btn--ghost:hover {
+    color: var(--blue);
+    border-color: var(--blue);
+    background: rgba(68, 153, 221, 0.1);
+    box-shadow: 0 0 15px rgba(68, 153, 221, 0.2);
+}
+.comms-btn--ghost::before, .comms-btn--ghost::after { border-color: var(--blue); }
+
+/* ── Primary Style (Registration Form) ── */
+.comms-btn--primary {
+    background: rgba(255, 107, 0, 0.15);
+    color: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.1);
+}
+.comms-btn--primary:hover {
+    background: var(--orange);
+    color: var(--bg-void);
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+}
+.comms-btn--primary::before, .comms-btn--primary::after { border-color: #fff; }
+
+/* ── Collision Prevention for members.html ── */
+/* Pushes the "DRAG TO ROTATE" text up automatically if the comms widget is present */
+body:has(.global-comms) #hud-hint {
+    bottom: 120px !important;
+}
+
+/* ── Mobile Morph (Transform to circular icons) ── */
+@media (max-width: 768px) {
+    .global-comms {
+        bottom: 24px;
+        right: 24px;
+        gap: 16px;
+    }
+    .comms-btn__text {
+        display: none; /* Hide text on small screens */
+    }
+    .comms-btn {
+        padding: 14px;
+        border-radius: 50%; /* Morph into perfect circles */
+    }
+    .comms-btn::before, .comms-btn::after {
+        display: none; /* Disable brackets on mobile */
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVBAR UPLINK.SOCIAL DROPDOWN
+═══════════════════════════════════════════════════════════ */
+.nav__dropdown-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav__dropdown-trigger {
+    cursor: none; /* Let custom cursor handle it */
+}
+
+.nav__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: 290px;
+    background: rgba(8, 8, 16, 0.95);
+    border: 1px solid var(--border-mid);
+    border-top: 2px solid var(--orange);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(16px) saturate(120%);
+    -webkit-backdrop-filter: blur(16px) saturate(120%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    z-index: 1000;
+    text-align: left;
+}
+
+/* Invisible bridge so the mouse doesn't lose hover when moving down */
+.nav__dropdown-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 20px;
+}
+
+/* Open state on hover */
+.nav__dropdown-wrapper:hover .nav__dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav__dropdown-item {
+    display: block;
+    padding: var(--space-3);
+    background: rgba(13, 13, 24, 0.6);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: none; 
+}
+
+/* Instagram Glow (Telemetry Blue) */
+.nav__dropdown-item:hover {
+    background: rgba(68, 153, 221, 0.1);
+    border-color: var(--blue);
+    transform: translateX(4px);
+    box-shadow: inset 2px 0 0 var(--blue);
+}
+
+/* Registration Glow (Orange) */
+.nav__dropdown-item--primary:hover {
+    background: rgba(255, 107, 0, 0.1);
+    border-color: var(--orange);
+    box-shadow: inset 2px 0 0 var(--orange);
+}
+
+.nav__dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    transition: color 0.2s;
+}
+
+.nav__dropdown-item:hover .nav__dropdown-header { color: var(--blue); }
+.nav__dropdown-item--primary:hover .nav__dropdown-header { color: var(--orange); }
+
+.nav__dropdown-text {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    transition: color 0.2s;
+}
+.nav__dropdown-item:hover .nav__dropdown-text { color: var(--text-primary); }
+
+/* Mobile Morph (Expands inside the hamburger menu) */
+@media (max-width: 768px) {
+    .nav__dropdown-wrapper {
+        width: 100%;
+        display: block;
+    }
+    .nav__dropdown-trigger {
+        justify-content: center;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav__dropdown {
+        position: static;
+        transform: none !important;
+        width: 100%;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        border: none;
+        border-bottom: 2px solid var(--orange);
+        box-shadow: none;
+        background: rgba(0,0,0,0.2);
+        padding: var(--space-4);
+    }
+    .nav__dropdown-item {
+        margin-bottom: var(--space-2);
+    }
+    .nav__dropdown-wrapper::after { display: none; }
 }

@@ -133,50 +133,138 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
 
-            // 4. Build Team Logs (Images & Videos)
-            let logsHtml = session.logs.map(log => {
-                let assetsHtml = log.assets.map(asset => {
-                    if (asset.type === "video") {
-                        // For raw local video files (e.g., assets/vid.mp4)
-                        return `<div class="media-item"><video src="${asset.url}" controls muted></video></div>`;
-                    } else if (asset.type === "gdrive-video") {
-                        // FIX: For Google Drive preview links
+            // 3.5 Build Sci-Fi Image Carousel
+            let carouselHtml = '';
+            if (session.gallery && session.gallery.length > 0) {
+                const slidesHtml = session.gallery.map((imgUrl, idx) => `
+                    <div class="sci-carousel__slide" data-index="${idx}">
+                        <div class="sci-carousel__image-wrap">
+                            <img src="${imgUrl}" alt="Session Image ${idx + 1}" />
+                            <div class="sci-carousel__overlay"></div>
+                        </div>
+                    </div>
+                `).join('');
+
+                carouselHtml = `
+                    <div class="sci-carousel mt-8" id="session-carousel">
+                        <div class="sci-carousel__viewport">
+                            <div class="sci-carousel__track">
+                                ${slidesHtml}
+                            </div>
+                        </div>
+                        <div class="sci-carousel__ui">
+                            <button class="sci-btn sci-btn--prev"><span>&lt;</span> DEC_</button>
+                            <div class="sci-carousel__readout mono text-orange">[ <span id="sci-current">01</span> // <span id="sci-total">${String(session.gallery.length).padStart(2, '0')}</span> ]
+                            </div>
+                            <button class="sci-btn sci-btn--next">INC_ <span>&gt;</span></button>
+                        </div>
+                        <div class="sci-carousel__progress"><div class="sci-carousel__progress-bar"></div></div>
+                    </div>
+                `;
+            }
+
+// 4. Build Team Logs (Images & Videos)
+            let logsHtml = (session.logs ||[]).map(log => {
+                let assetsHtml = ''; 
+
+// --- SAFETY CHECK ---
+                // Only build the assets grid if the 'assets' array exists and is not empty.
+                if (log.assets && Array.isArray(log.assets) && log.assets.length > 0) {
+                                    assetsHtml = log.assets.map(asset => {
+// Inside the assets mapping loop in engine.js
+                    if (asset.type === "gdrive-video") {
                         return `
-                        <div class="media-item gdrive-wrapper">
-                            <iframe src="${asset.url}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                        <div class="media-item media-item--video" onclick="this.classList.add('is-playing')">
+                            <!-- Overlay stays visible until clicked -->
+                            <div class="custom-play-overlay">
+                                <svg class="custom-play-icon" viewBox="0 0 24 24" style="width:52px;height:52px;color:#FF6B00;">
+                                    <path fill="currentColor" d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2M10,16.5V7.5L16,12Z"/>
+                                </svg>
+                                <span class="custom-play-text mono text-xs" style="color:#fff; margin-top:10px;">INITIALIZING STREAM</span>
+                            </div>
+
+                            <div class="stream-container">
+                                <!-- This iframe loads immediately as the page starts -->
+                                <iframe 
+                                    src="${asset.url}" 
+                                    frameborder="0" 
+                                    allow="autoplay; encrypted-media" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
                         </div>`;
                     } else {
-                        // For standard images
-                        return `<div class="media-item"><img src="${asset.url}" alt="${log.team} asset"></div>`;
-                    }
-                }).join('');
+                            // Standard images (unchanged)
+                            return `<div class="media-item"><img src="${asset.url}" alt="${log.team} asset"></div>`;
+                        }
+                    }).join('');
+                }
 
                 return `
                     <div class="team-log mt-8">
                         <h3 class="display-sm text-primary mb-2 border-b border-subtle pb-2">${log.team}</h3>
                         <p class="text-secondary text-sm mb-4">${log.description}</p>
-                        <div class="media-grid">
-                            ${assetsHtml}
-                        </div>
+                        ${assetsHtml ? `<div class="media-grid">${assetsHtml}</div>` : ''}
                     </div>
                 `;
             }).join('');
-
+            
             // 5. Inject everything into the page
             detailContainer.innerHTML = `
-                <div class="u-flex u-justify-between u-items-center mb-6">
-                    <a href="sessions.html" class="btn btn--ghost">< BACK TO LOGS</a>
-                    <span class="mono text-sm text-tertiary">REC_DATE: ${session.date}</span>
+                <!-- Centered Header Block -->
+                <div class="session-header u-text-center">
+                    <a href="sessions.html" class="btn btn--ghost mb-6">< BACK TO MISSION LOGS</a>
+                    <h1 class="display-lg text-orange">${session.title}</h1>
+                    <span class="mono text-sm text-tertiary mt-2 u-block">REC_DATE: ${session.date}</span>
+                    <div class="divider divider--glyph"></div>
                 </div>
-                <h1 class="display-lg text-orange u-text-center">${session.title}</h1>
-                <div class="divider divider--glyph"></div>
+
                 <div class="inset">
                     <span class="label label--blue mb-2 u-block">MISSION.AGENDA</span>
                     <p class="text-primary text-sm">${session.agenda}</p>
                 </div>
+                
+                ${carouselHtml}
                 ${presentationHtml}
                 ${logsHtml}
             `;
+
+            // NEW: INLINE VIDEO PLAYER LOGIC & ANIMATIONS
+            const videoItems = detailContainer.querySelectorAll('.media-item--video');
+            videoItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Prevent triggering again if already playing
+                    if (this.classList.contains('is-playing')) return;
+                    this.classList.add('is-playing');
+                    
+                    const url = this.getAttribute('data-video-url');
+                    const streamContainer = this.querySelector('.stream-container');
+                    const overlay = this.querySelector('.launch-overlay');
+                    
+                    // Step 1: Sci-fi booting animation text
+                    overlay.innerHTML = `
+                        <div class="mono text-xs text-orange u-text-center" style="z-index: 10;">
+                            [ ESTABLISHING UPLINK ]<br>
+                            <span class="typewriter-caret mt-2"></span>
+                        </div>
+                    `;
+                    
+                    // Step 2: Simulate network handshake delay, then inject Iframe
+                    setTimeout(() => {
+                        overlay.style.opacity = '0';
+                        streamContainer.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>`;
+                        
+                        // GSAP fade-in effect for the iframe
+                        if (window.gsap) {
+                            gsap.fromTo(streamContainer.querySelector('iframe'), 
+                                { opacity: 0, scale: 0.95 }, 
+                                { opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" }
+                            );
+                        }
+                    }, 1200); // 1.2 second boot sequence
+                });
+            });
+
         } else {
             detailContainer.innerHTML = `<h1 class="display-md text-red u-text-center">ERROR: ARCHIVE NOT FOUND</h1>`;
         }
