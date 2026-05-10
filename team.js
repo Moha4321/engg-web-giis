@@ -22,60 +22,62 @@
 
 const CORE_MEMBERS =[
   {
-    id: 'c0', name: 'Mohana Rangan Desigan', role: 'Club Operator', domain: 'cfd', initials: 'MRD',
+    id: 'c0', name: 'Mohana Rangan Desigan', role: 'Club Operator', initials: 'MRD',
     research: 'Math Guide & Session Planner & Website manager',
     bio: 'Calculates probability, descent formulas, statistical analysis for engineering post-mortems, creates, manages website, and responsible for the simulations',
-    publications: 15, h_index: 6, email: 'mohana@enggclub.edu'
+     email: 'mohanrd200932@gmail.com'
   },
   {
-    id: 'c1', name: 'Vivaan Keluskar', role: 'Club Operator', domain: 'cfd', initials: 'VK',
+    id: 'c1', name: 'Vivaan Keluskar', role: 'Club Operator', initials: 'VK',
     research: 'Physics Guide & Challenge Designer',
     bio: 'Oversees the physical mechanics of drops and designs high-pressure engineering constraints.',
-    publications: 12, h_index: 4, email: 'vivaan@enggclub.edu'
+    email: 'vivaan@enggclub.edu'
   },
 
   {
-    id: 'c2', name: 'Buvan Senthil Vinayakam', role: 'Club Operator', domain: 'fem', initials: 'BSV',
+    id: 'c2', name: 'Buvan Senthil Vinayakam', role: 'Club Operator', initials: 'BSV',
     research: 'Guide & Challenge Designer',
     bio: 'Develops structural parameters and failure-condition simulations for team challenges.',
-    publications: 10, h_index: 5, email: 'buvan@enggclub.edu'
+    email: 'buvan@enggclub.edu'
+  },
+  {
+    id: 'c3', name: 'Shora Uchida', role: 'Club Operator', initials: 'SU',
+    research: 'Guide & Website Manager',
+    bio: 'Maintains digital telemetry systems and interactive archives for the club network.',
+    email: 'shora@enggclub.edu'
   },
 
-    {
-    id: 'c3', name: 'Laeem Khan', role: 'Club Operator', domain: 'ml', initials: 'LK',
+  {
+    id: 'c4', name: 'Ziwen An', role: 'Club Operator', initials: 'ZA',
+    research: 'Guide & Analyst',
+    bio: 'Tracks team telemetry, evaluates design trade-offs, and breaks down failure points.',
+    email: 'ziwen@enggclub.edu'
+  },
+  {
+    id: 'c5', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', initials: 'DS',
+    research: 'Guide & Materials, Logistics & Web',
+    bio: 'Manages physical resource constraints, system administration, and club infrastructure.',
+    email: 'dharanevasan@enggclub.edu'
+  },
+  {
+    id: 'c6', name: 'Adhvaith V. Saravanan', role: 'Club Operator', initials: 'AVS',
+    research: 'Guide & Materials and Logistics',
+    bio: 'Controls inventory bottlenecks and simulates real-world supply chain pressures for builds.',
+    email: 'adhvaith@enggclub.edu'
+  },
+
+  {
+    id: 'c7', name: 'Laeem Khan', role: 'Club Operator', initials: 'LK',
     research: 'Guide & Session Planner',
     bio: 'Architects the session timelines and ensures mission objectives are met efficiently.',
     publications: 8, h_index: 3, email: 'laeem@enggclub.edu'
   },
+
   {
-    id: 'c4', name: 'Ziwen An', role: 'Club Operator', domain: 'ml', initials: 'ZA',
-    research: 'Guide & Analyst',
-    bio: 'Tracks team telemetry, evaluates design trade-offs, and breaks down failure points.',
-    publications: 7, h_index: 2, email: 'ziwen@enggclub.edu'
-  },
-  {
-    id: 'c5', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', domain: 'fem', initials: 'DS',
-    research: 'Guide & Materials, Logistics & Web',
-    bio: 'Manages physical resource constraints, system administration, and club infrastructure.',
-    publications: 9, h_index: 4, email: 'dharanevasan@enggclub.edu'
-  },
-  {
-    id: 'c6', name: 'Adhvaith V. Saravanan', role: 'Club Operator', domain: 'cfd', initials: 'AVS',
-    research: 'Guide & Materials and Logistics',
-    bio: 'Controls inventory bottlenecks and simulates real-world supply chain pressures for builds.',
-    publications: 6, h_index: 2, email: 'adhvaith@enggclub.edu'
-  },
-  {
-    id: 'c7', name: 'Shora Uchida', role: 'Club Operator', domain: 'ml', initials: 'SU',
-    research: 'Guide & Website Manager',
-    bio: 'Maintains digital telemetry systems and interactive archives for the club network.',
-    publications: 11, h_index: 5, email: 'shora@enggclub.edu'
-  },
-  {
-    id: 'c8', name: 'Shaurya Shukla', role: 'Club Operator', domain: 'fem', initials: 'SS',
+    id: 'c8', name: 'Shaurya Shukla', role: 'Club Operator', initials: 'SS',
     research: 'Guide & Social Media',
     bio: 'Handles external communications, operational reporting, and visual data archiving.',
-    publications: 5, h_index: 1, email: 'shaurya@enggclub.edu'
+    email: 'shaurya@enggclub.edu'
   }
 ];
 
