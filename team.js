@@ -55,8 +55,8 @@ const CORE_MEMBERS =[
   },
   {
     id: 'c5', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', initials: 'DS',
-    research: 'Guide & Materials, Logistics & Web',
-    bio: 'Manages physical resource constraints, system administration, and club infrastructure.',
+    research: 'Guide & Materials, Logistics & Website Manager',
+    bio: 'Manages physical resource constraints, system administration, Physics Guide, and club infrastructure.',
     email: 'dharanevasan@enggclub.edu'
   },
   {
