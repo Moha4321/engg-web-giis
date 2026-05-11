@@ -1,0 +1,61 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, geometry, graphicx, hyperref, xcolor}
+\usepackage{tgtermes} % Times font
+\geometry{a4paper, margin=1.2in}
+
+\definecolor{simorange}{RGB}{255,122,40}
+
+\title{\vspace{-2cm}\textbf{\textcolor{simorange}{Under the Hood: High-Speed Impact Kinematics}}\\\large Simulation Engine V2.0 Physics Architecture}
+\author{Engineering Club}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{Introduction: The Mechanics of a Crash}
+In motorsport, the survival of a driver during an impact relies on the careful management of kinetic energy ($KE = \frac{1}{2}mv^2$). If an F1 car hits a wall and stops instantly, the deceleration forces (measured in Gs) would be fatal. 
+
+To prevent this, the carbon-fibre nose cone acts as a sacrificial ``crumple zone." It crushes over a specific distance ($d$), doing \textit{Work} ($W = F \times d$) to bleed off the energy. A softer nose cone means a longer crush distance, which stretches the impact over more time, drastically lowering the peak force the driver feels.
+
+\section{Elasto-Plastic Causality: The Piecewise Model}
+Our physics engine models the F1 nose cone as a non-linear spring. Initially, the carbon-fibre compresses elastically (stiffness $k_e$). However, once the force exceeds the material's yield point ($x_{\text{yield}}$), it breaks and enters a plastic deformation phase (stiffness $k_p$). 
+
+The restoring force $F(x)$ pushing back against the car based on the crush distance $x$ is:
+\begin{equation}
+    F(x) = \begin{cases} 
+      k_e x & \text{if } x \le x_{\text{yield}} \\ 
+      k_e x_{\text{yield}} + k_p (x - x_{\text{yield}}) & \text{if } x > x_{\text{yield}} 
+   \end{cases}
+\end{equation}
+
+By Newton's Second Law, the acceleration of the car at any point during the crash is:
+\begin{equation}
+    \frac{d^2x}{dt^2} = -\frac{F(x)}{m}
+\end{equation}
+This is a second-order Ordinary Differential Equation (ODE). Because of the extreme stiffness of carbon fibre ($k_e \approx 500,000$ N/m), the forces spike incredibly fast. 
+
+\section{Rigorous Integration: The RK4 Solver}
+If we attempted to solve this high-stiffness collision using the basic Euler method, the simulation would "explode"—the massive forces would overshoot in a single 16-millisecond frame, causing the math to spiral to infinity.
+
+To guarantee absolute stability, our Engine decouples the second-order ODE into a system of two first-order ODEs:
+\begin{equation}
+    \frac{dx}{dt} = v, \quad \frac{dv}{dt} = a(x, v) = -\frac{F(x)}{m}
+\end{equation}
+
+We then feed this system into a \textbf{Runge-Kutta 4th Order (RK4)} integrator. RK4 is an industrial-grade numerical algorithm used in Finite Element Analysis (FEA) by actual F1 engineers. Instead of blindly stepping forward, RK4 evaluates four intermediate gradients (slopes) per timestep ($h = \Delta t$):
+\begin{align*}
+    k_{1,x} &= v_n, \quad &k_{1,v} &= a(x_n, v_n) \\
+    k_{2,x} &= v_n + \frac{h}{2} k_{1,v}, \quad &k_{2,v} &= a\left(x_n + \frac{h}{2} k_{1,x}, v_n + \frac{h}{2} k_{1,v}\right) \\
+    k_{3,x} &= v_n + \frac{h}{2} k_{2,v}, \quad &k_{3,v} &= a\left(x_n + \frac{h}{2} k_{2,x}, v_n + \frac{h}{2} k_{2,v}\right) \\
+    k_{4,x} &= v_n + h k_{3,v}, \quad &k_{4,v} &= a(x_n + h k_{3,x}, v_n + h k_{3,v})
+\end{align*}
+
+Finally, the simulation computes the true state for the next frame by taking a weighted average of these four slopes:
+\begin{equation}
+    x_{n+1} = x_n + \frac{h}{6}(k_{1,x} + 2k_{2,x} + 2k_{3,x} + k_{4,x})
+\end{equation}
+This creates an exceptionally stable, physically accurate, and determinist real-time collision model.
+
+\end{document}

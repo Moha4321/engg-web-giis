@@ -610,7 +610,92 @@
       .sim-dashboard { padding: 14px; gap: 12px; }
       .graph-label { font-size: 7px; }
     }
+/* ============================================
+       MATH DETAILS TOGGLE (LATEX EXPANSION)
+    ============================================ */
+    .math-details {
+      display: none; /* Shown only in Engineer mode */
+      margin-top: 12px;
+      margin-bottom: 12px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--sim-border-m);
+      border-radius: var(--sim-r-sm);
+      font-size: 10px;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+    body.mode-engineer .math-details {
+      display: block;
+      animation: fadeUp 0.4s ease both;
+    }
+    .math-details summary {
+      padding: 10px 14px;
+      cursor: pointer;
+      color: var(--sim-text-2);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      outline: none;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .math-details summary:hover { background: rgba(255,255,255,0.03); }
+    .math-details summary::-webkit-details-marker { display: none; }
+    .math-details summary::after { content: '+ VIEW RIGOROUS MATH'; color: var(--sim-blue); font-size: 9px; }
+    .math-details[open] summary::after { content: '- HIDE MATH'; }
+    .math-details .math-content {
+      padding: 0 14px 14px 14px;
+      border-top: 1px solid var(--sim-border);
+      color: var(--sim-text-2);
+    }
+    .math-details .math-content p { margin-bottom: 8px; }
+    
+    /* Impact specifically uses orange styling */
+    .math-details.impact { border-color: rgba(255,122,40,0.25); }
+    .math-details.impact summary { color: var(--sim-orange); }
+    .math-details.impact summary::after { color: var(--sim-orange); }
+    .math-details.impact .math-content { border-top-color: rgba(255,122,40,0.15); }
+
+/* ============================================
+       GLOBAL PDF DOC BUTTON (HEADER)
+    ============================================ */
+    .global-doc-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 24px; padding: 8px 18px; border-radius: var(--sim-r-sm);
+      border: 1px solid var(--sim-border-m); background: var(--sim-blue-dim);
+      color: var(--sim-blue); font-family: var(--sim-font-mono); font-size: 10px;
+      letter-spacing: 0.15em; text-decoration: none; transition: all 0.3s ease;
+    }
+    .global-doc-btn:hover {
+      border-color: var(--sim-blue); background: rgba(77,159,255,0.15);
+      box-shadow: 0 0 12px rgba(77,159,255,0.2);
+    }
+    .global-doc-btn .optional-tag {
+      opacity: 0.6; font-size: 8px; letter-spacing: 0.1em;
+    }
+    
+    /* Dynamically switches to Orange when F1 Impact is selected */
+    .global-doc-btn.impact-mode {
+      border-color: rgba(255,122,40,0.35); background: var(--sim-orange-dim);
+      color: var(--sim-orange);
+    }
+    .global-doc-btn.impact-mode:hover {
+      border-color: var(--sim-orange); background: rgba(255,122,40,0.15);
+      box-shadow: 0 0 12px rgba(255,122,40,0.2);
+    }
   </style>
+
+  <!-- MathJax Configuration and Script for LaTeX rendering -->
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' },
+      chtml: { matchFontHeight: false }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body class="mode-simple">
 
@@ -759,6 +844,17 @@
       <div class="eyebrow">SIMULATION ENGINE V2.0</div>
       <h1 class="page-title">Real World Applications</h1>
       <p class="page-subtitle">Real-time physics simulation — from mission control to classroom</p>
+      <!-- DYNAMIC PDF BUTTON -->
+      <a href="sim_physics/aero_physics.pdf" target="_blank" id="global-pdf-btn" class="global-doc-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        SEE THE MATH BEHIND THE SIMULATION<span class="optional-tag">[COMPLETELY OPTIONAL]</span>
+      </a>
     </div>
 
     <!-- COMPLEXITY TOGGLE BAR -->
@@ -912,7 +1008,43 @@
               <span class="eq-line__val" id="eq-accel">—</span>
             </div>
           </div>
-
+<!-- Rigorous Math Dropdown (Aero) -->
+          <!-- <details class="math-details">
+            <summary>RIGOROUS KINEMATICS & NUMERICAL SOLVER</summary>
+            <div class="math-content">
+              <p style="margin-top:10px;"><strong>1. Absolute Causality (The Physics):</strong></p>
+              <p>A falling spacecraft is governed by Newton's Second Law. It experiences two primary forces: the constant downward pull of gravity ($F_g$) and the upward resistance of aerodynamic drag ($F_d$), which scales non-linearly with the square of the velocity.</p>
+              <p>$$ F_{net} = F_g - F_d $$</p>
+              <p>$$ m \frac{dv}{dt} = mg - \frac{1}{2} \rho v^2 C_d A $$</p>
+              <p>This gives us our primary non-linear, first-order ordinary differential equation (ODE). Because atmospheric density ($\rho$) changes with altitude and parachute area ($A$) changes dynamically based on deployment, an exact analytical solution is impossible. We must solve this using a computer.</p>
+              <p style="margin-top:12px;"><strong>2. Numerical Integration (Euler Method):</strong></p>
+              <p>To simulate this in real-time, the engine steps forward in tiny fractions of a second ($\Delta t$). At each frame, we compute the instantaneous acceleration ($a_n$) based on the current state, and use it to predict the velocity ($v_{n+1}$) and position ($y_{n+1}$) for the next frame.</p>
+              <p>$$ a_n = \frac{dv}{dt} = g - \frac{\rho C_d A}{2m} v_n^2 $$</p>
+              <p>$$ v_{n+1} = v_n + a_n \Delta t $$</p>
+              <p>$$ y_{n+1} = y_n - v_n \Delta t $$</p>
+              <p>This deterministic loop runs 60 times a second, turning static algebraic constraints into a living simulation.</p>
+            </div>
+          </details> -->
+<!-- Rigorous Math Dropdown (Impact) -->
+          <!-- <details class="math-details impact">
+            <summary>RIGOROUS KINEMATICS & RK4 SOLVER</summary>
+            <div class="math-content">
+              <p style="margin-top:10px;"><strong>1. Elasto-Plastic Causality:</strong></p>
+              <p>During an F1 crash, the carbon-fibre nose cone acts as a spring that eventually yields and permanently deforms to bleed off kinetic energy. The stopping force $F(x)$ is a piecewise function dependent on the crush distance $x$:</p>
+              <p>$$ F(x) = \begin{cases} k_e x & \text{if } x \le x_{yield} \\ k_e x_{yield} + k_p (x - x_{yield}) & \text{if } x > x_{yield} \end{cases} $$</p>
+              <p>By Newton's Second Law, the deceleration of the survival cell is proportional to the negative restoring force of the crush structure:</p>
+              <p>$$ \frac{d^2x}{dt^2} = -\frac{F(x)}{m} $$</p>
+              <p style="margin-top:12px;"><strong>2. Runge-Kutta 4th Order (RK4) Integration:</strong></p>
+              <p>Unlike aerodynamic drag, rigid body collisions feature massive, near-instantaneous force spikes. A basic Euler integration would "explode" and become unstable due to the extremely stiff springs. Instead, the engine decouples the 2nd-order ODE into a system of 1st-order ODEs and uses an industrial RK4 solver. It evaluates four intermediate gradients per timestep ($h = \Delta t$) to guarantee absolute stability:</p>
+              <p>$$ \frac{dx}{dt} = v, \quad \frac{dv}{dt} = a(x, v) = -\frac{F(x)}{m} $$</p>
+              <p>$$ k_{1,x} = v_n, \quad k_{1,v} = a(x_n, v_n) $$</p>
+              <p>$$ k_{2,x} = v_n + \frac{h}{2} k_{1,v}, \quad k_{2,v} = a\left(x_n + \frac{h}{2} k_{1,x}, v_n + \frac{h}{2} k_{1,v}\right) $$</p>
+              <p>$$ k_{3,x} = v_n + \frac{h}{2} k_{2,v}, \quad k_{3,v} = a\left(x_n + \frac{h}{2} k_{2,x}, v_n + \frac{h}{2} k_{2,v}\right) $$</p>
+              <p>$$ k_{4,x} = v_n + h k_{3,v}, \quad k_{4,v} = a(x_n + h k_{3,x}, v_n + h k_{3,v}) $$</p>
+              <p>$$ x_{n+1} = x_n + \frac{h}{6}(k_{1,x} + 2k_{2,x} + 2k_{3,x} + k_{4,x}) $$</p>
+              <p>This exact mathematics is what drives structural FEA (Finite Element Analysis) solvers used by F1 racing engineers.</p>
+            </div>
+          </details> -->
         <div class="section-divider"></div>
 
           <div style="display: flex; gap: 8px; margin-bottom: 16px;">
@@ -1134,11 +1266,26 @@
     // ============================================
     // MODULE TAB SWITCHER
     // ============================================
+// ============================================
+    // MODULE TAB SWITCHER
+    // ============================================
     function switchTab(name) {
       ['aero','impact'].forEach(t => {
         document.getElementById('tab-' + t).classList.toggle('is-active', t === name);
         document.getElementById('panel-' + t).classList.toggle('is-visible', t === name);
       });
+
+      // Update the Global PDF button dynamically based on the active tab
+      const pdfBtn = document.getElementById('global-pdf-btn');
+      if (pdfBtn) {
+        if (name === 'impact') {
+          pdfBtn.href = 'sim_physics/impact_physics.pdf';
+          pdfBtn.classList.add('impact-mode');
+        } else {
+          pdfBtn.href = 'sim_physics/aero_physics.pdf';
+          pdfBtn.classList.remove('impact-mode');
+        }
+      }
     }
 
     // ============================================
