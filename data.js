@@ -2,11 +2,11 @@
 
 export const clubData = {
     // ==========================================
-    // 1. HOME PAGE CONTENT
+    // 1. HOME PAGE CONTENTdftdt
     // ==========================================
     home: {
         hero: {
-            overline: "Engineering Through Failure // Club Proposal",
+            overline: "Engineering Through Mohan // Club Proposal",
             headline: "Building <span class='text-orange'>Thinkers,</span><br>Not Just Students.",
             subheadline: "This isn't your average school science club. <strong>We want our students to fail. Yes, we said it right: F A I L.</strong> Failure is the single most important concept in all of engineering. If you don't fail, you don't learn. And that's where most generic science, robotics, or physics clubs go wrong: <span class='text-red'>Too much theory, too little thinking.</span>",
             stats:[
