@@ -48,17 +48,19 @@ const CORE_MEMBERS =[
   },
 
   {
-    id: 'c5', name: 'Ziwen An', role: 'Club Operator', initials: 'ZA',
-    research: 'Guide & Analyst',
-    bio: 'Tracks team telemetry, evaluates design trade-offs, and breaks down failure points.',
-    email: 'ziwen@enggclub.edu'
-  },
-  {
     id: 'c4', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', initials: 'DS',
     research: 'Guide & Materials, Logistics & Website Manager',
     bio: 'Manages physical resource constraints, system administration, Physics Guide, and club infrastructure.',
     email: 'dharanevasan@enggclub.edu'
   },
+
+  {
+    id: 'c5', name: 'Ziwen An', role: 'Club Operator', initials: 'ZA',
+    research: 'Guide & Analyst',
+    bio: 'Tracks team telemetry, evaluates design trade-offs, and breaks down failure points.',
+    email: 'ziwen@enggclub.edu'
+  },
+  
   {
     id: 'c6', name: 'Adhvaith V. Saravanan', role: 'Club Operator', initials: 'AVS',
     research: 'Guide & Materials and Logistics',
