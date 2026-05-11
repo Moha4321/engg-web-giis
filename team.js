@@ -48,13 +48,13 @@ const CORE_MEMBERS =[
   },
 
   {
-    id: 'c4', name: 'Ziwen An', role: 'Club Operator', initials: 'ZA',
+    id: 'c5', name: 'Ziwen An', role: 'Club Operator', initials: 'ZA',
     research: 'Guide & Analyst',
     bio: 'Tracks team telemetry, evaluates design trade-offs, and breaks down failure points.',
     email: 'ziwen@enggclub.edu'
   },
   {
-    id: 'c5', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', initials: 'DS',
+    id: 'c4', name: 'Dharanevasan Sathishkumar', role: 'Club Operator', initials: 'DS',
     research: 'Guide & Materials, Logistics & Website Manager',
     bio: 'Manages physical resource constraints, system administration, Physics Guide, and club infrastructure.',
     email: 'dharanevasan@enggclub.edu'
@@ -63,6 +63,7 @@ const CORE_MEMBERS =[
     id: 'c6', name: 'Adhvaith V. Saravanan', role: 'Club Operator', initials: 'AVS',
     research: 'Guide & Materials and Logistics',
     bio: 'Controls inventory bottlenecks and simulates real-world supply chain pressures for builds.',
+
     email: 'adhvaith@enggclub.edu'
   },
 
@@ -101,7 +102,10 @@ const SUPPORTED_MEMBERS =[
   { id:'s15', name:'Rimi Kawamoto',      initials:'RK',  domain:'cfd', role:'Club Member', anchor:'c6', semi_a:2.9, ecc:0.18, incl:60, lan:225, aop:250, period:0.88 },
   { id:'s16', name:'Samika Karthik',     initials:'SK',  domain:'ml',  role:'Club Member', anchor:'c7', semi_a:3.1, ecc:0.10, incl:40, lan:315, aop:340, period:1.0  },
   { id:'s17', name:'Sosuke Iyoda',       initials:'SI',  domain:'fem', role:'Club Member', anchor:'c8', semi_a:3.9, ecc:0.28, incl:75, lan: 15, aop: 40, period:1.45 },
-  { id:'s18', name:'Tanisha Velu',       initials:'TV',  domain:'cfd', role:'Club Member', anchor:'c0', semi_a:2.6, ecc:0.08, incl:28, lan:195, aop:210, period:0.82 }
+  { id:'s18', name:'Tanisha Velu',       initials:'TV',  domain:'cfd', role:'Club Member', anchor:'c0', semi_a:2.6, ecc:0.08, incl:28, lan:195, aop:210, period:0.82 },
+  { id:'s18', name:'Mantra Joshi',       initials:'MJ',  domain:'cfd', role:'Club Member', anchor:'c4', semi_a:2.6, ecc:0.08, incl:28, lan:195, aop:210, period:0.82 },
+  { id:'s19', name:'Atharv Tripathi',       initials:'AT',  domain:'cfd', role:'Club Member', anchor:'c4', semi_a:2.6, ecc:0.08, incl:28, lan:195, aop:210, period:0.82 },
+  { id:'s20', name:'Mihika Hivarekar',       initials:'MH',  domain:'cfd', role:'Club Member', anchor:'c7', semi_a:2.6, ecc:0.08, incl:28, lan:195, aop:210, period:0.82 }
 ];
 
 /* ════════════════════════════════════════════════════════════════
